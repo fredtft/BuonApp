@@ -308,13 +308,13 @@ export default function App() {
 
     if (type === 'ingredient') {
       return (
-        <div className="absolute top-1.5 left-1.5 flex gap-1 z-10">
+        <div className="absolute top-0.5 left-0.5 flex gap-0.5 z-10">
           {relevantTags.map(tag => {
             const ind = INDICATORS_CONFIG[tag];
             return (
               <div 
                 key={tag} 
-                className={`w-2.5 h-2.5 rounded-full border border-white shadow-sm ${ind?.color}`}
+                className={`w-1.5 h-1.5 rounded-full border border-white/50 shadow-sm ${ind?.color}`}
                 title={ind?.label}
               />
             );
@@ -340,18 +340,18 @@ export default function App() {
   };
 
   const renderLegend = ({ clickable, activeTags, onToggle }: { clickable: boolean, activeTags?: DietTag[], onToggle?: (t: DietTag) => void }) => (
-    <div className="w-full bg-white/50 border-b border-slate-100 overflow-x-auto no-scrollbar py-2.5">
-      <div className="flex flex-nowrap gap-3 px-6 whitespace-nowrap min-w-max justify-start md:justify-center">
+    <div className="w-full overflow-x-auto no-scrollbar py-0.5">
+      <div className="flex flex-nowrap gap-1.5 whitespace-nowrap min-w-max justify-center mx-auto">
          {Object.entries(INDICATORS_CONFIG).map(([key, config]) => {
            const isActive = activeTags?.includes(key as DietTag);
            return (
              <div 
               key={key} 
               onClick={() => clickable && onToggle && onToggle(key as DietTag)} 
-              className={`flex items-center gap-1.5 transition-all px-2.5 py-1 rounded-full ${clickable ? 'cursor-pointer hover:bg-slate-100' : ''} ${isActive ? 'bg-slate-200 text-slate-800 font-bold scale-105' : 'grayscale-[0.5] opacity-70'}`}
+              className={`flex items-center gap-1 transition-all px-2 py-1 rounded-lg border ${clickable ? 'cursor-pointer active:scale-95' : ''} ${isActive ? 'bg-slate-200 border-slate-300 text-slate-800 font-bold' : 'bg-slate-50 border-slate-100 text-slate-400 grayscale-[0.5] opacity-70'}`}
              >
-                <div className={`w-2.5 h-2.5 rounded-full ${config?.color} border border-white shadow-sm`}></div>
-                <span className="text-[10px] uppercase font-black tracking-tight">{config?.label}</span>
+                <div className={`w-2 h-2 rounded-full ${config?.color} shadow-sm`}></div>
+                <span className="text-[9px] uppercase font-black tracking-tight">{config?.label}</span>
              </div>
            );
          })}
@@ -362,10 +362,10 @@ export default function App() {
   // --- Views ---
 
   const renderHome = () => (
-    <div className="flex flex-col gap-4 pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full">
+    <div className="flex flex-col gap-4 pb-20 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full">
       <header className="px-6 pt-6 pb-2 md:pt-10 md:pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="md:hidden">
-          <h1 className="text-xl font-black text-emerald-600 tracking-tight">BuonApp</h1>
+          <h1 className="text-xl font-black text-emerald-600 tracking-tight text-center">BuonApp</h1>
         </div>
         <div className="flex items-center bg-slate-200/50 p-1 rounded-2xl md:w-80 shadow-inner">
           <button onClick={() => setHomeFilterMode('frigo')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${homeFilterMode === 'frigo' ? 'bg-white text-emerald-600 shadow-md' : 'text-slate-500'}`}>
@@ -380,7 +380,7 @@ export default function App() {
       <div className="px-4 md:px-0">
         {heroRecipe ? (
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-300 to-teal-400 rounded-[2rem] blur opacity-10 group-hover:opacity-20 transition duration-500"></div>
+            <div className="absolute -inset-1 bg-gradient-r from-emerald-300 to-teal-400 rounded-[2rem] blur opacity-10 group-hover:opacity-20 transition duration-500"></div>
             <div className="relative bg-white rounded-[2rem] p-6 md:p-10 shadow-2xl flex flex-col md:flex-row gap-6 md:gap-12 border border-slate-50 items-center overflow-hidden">
               
               <button 
@@ -395,11 +395,11 @@ export default function App() {
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                      <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-lg uppercase tracking-wider">In evidenza</span>
-                     {new Date().getHours() < 15 ? <span className="flex items-center gap-1 text-[10px] font-bold text-amber-500 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-lg"><Sun size={10}/> Pranzo</span> : <span className="flex items-center gap-1 text-[10px] font-bold text-indigo-500 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-lg"><Moon size={10}/> Cena</span>}
+                     {new Date().getHours() < 15 ? <span className="flex items-center gap-1 text-[10px] font-bold text-amber-500 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-lg"><Sun size={10}/> Pranzo</span> : <span className="flex items-center gap-1 text-[10px] font-bold text-indigo-500 bg-indigo-100 px-2 py-0.5 rounded-lg"><Moon size={10}/> Cena</span>}
                   </div>
                   <h2 className="text-2xl md:text-3xl font-black text-slate-800 leading-tight pr-14">{heroRecipe.name}</h2>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex wrap gap-2">
                   {heroRecipe.tags.slice(0, 4).map(t => <TagBadge key={t} tag={t} />)}
                 </div>
                 <div className="flex items-center gap-6 text-sm text-slate-400 font-bold">
@@ -448,9 +448,9 @@ export default function App() {
     const grouped = (state.ingredients || []).reduce((acc, ing) => { if (!acc[ing.category]) acc[ing.category] = []; acc[ing.category].push(ing); return acc; }, {} as Record<IngredientCategory, Ingredient[]>);
     const categories = (Object.keys(CATEGORY_LABELS) as IngredientCategory[]);
     return (
-      <div className="pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full flex flex-col">
-        <header className="px-6 pt-6 pb-4 md:pt-10 md:pb-6 bg-white/95 backdrop-blur-md sticky top-0 z-20 shadow-sm flex flex-col gap-3 rounded-b-2xl md:rounded-b-3xl">
-          <div className="flex justify-between items-center">
+      <div className="pb-24 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full flex flex-col">
+        <header className="px-5 pt-6 pb-3 md:pt-10 md:pb-8 bg-white/95 backdrop-blur-md sticky top-0 z-20 shadow-sm flex flex-col gap-2 rounded-b-3xl">
+          <div className="flex justify-between items-center mb-1">
              <h2 className="text-xl font-black text-slate-800 flex items-center gap-3">
                <Refrigerator className="text-emerald-500" size={24} strokeWidth={2.5}/> Il mio Frigo
              </h2>
@@ -463,15 +463,14 @@ export default function App() {
                </button>
              </div>
           </div>
-          <div className="relative group">
+          <div className="relative group mb-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={18} />
-            <input type="text" placeholder="Cerca ingrediente..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 pl-11 pr-4 py-3 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-inner border border-transparent" />
+            <input type="text" placeholder="Cerca..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 pl-11 pr-4 py-1.5 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-inner border border-transparent" />
           </div>
+          {renderLegend({ clickable: true, activeTags: activeIngredientTags, onToggle: (tag) => { setActiveIngredientTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]) } })}
         </header>
 
-        {renderLegend({ clickable: true, activeTags: activeIngredientTags, onToggle: (tag) => { setActiveIngredientTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]) } })}
-
-        <div className="p-4 space-y-10 pt-8 overflow-y-auto no-scrollbar flex-1">
+        <div className="p-4 space-y-4 pt-4 overflow-y-auto no-scrollbar flex-1">
           {categories.map(cat => {
             let items = grouped[cat]?.filter(i => i.name.toLowerCase().includes(searchQuery.toLowerCase())) || [];
             const indicatorKeys = Object.keys(INDICATORS_CONFIG) as DietTag[];
@@ -480,19 +479,19 @@ export default function App() {
             if (items.length === 0) return null;
             return (
               <div key={cat} className="animate-fade-in">
-                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1 flex items-center gap-2">
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2 ml-1 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400"></div> {CATEGORY_LABELS[cat]}
                 </h3>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-9 gap-5 md:gap-8">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-9 gap-1.5 md:gap-4">
                   {items.map(ing => {
                     const isActive = state.inventory.includes(ing.id);
                     return (
-                      <button key={ing.id} onClick={() => handleIngredientClick(ing)} className={`relative flex flex-col items-center justify-center p-0.5 rounded-2xl aspect-square transition-all duration-200 border-2 ${isActive && !isEditMode ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg scale-[1.04]' : 'bg-white text-slate-500 border-slate-100 hover:border-slate-200'} ${isEditMode && 'border-dashed border-emerald-300'}`}>
+                      <button key={ing.id} onClick={() => handleIngredientClick(ing)} className={`relative flex flex-col items-center justify-center py-0.5 px-0.5 rounded-xl transition-all duration-200 border-2 ${isActive && !isEditMode ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm' : 'bg-white text-slate-500 border-slate-100 hover:border-slate-200'} ${isEditMode && 'border-dashed border-emerald-300'}`}>
                         {!isEditMode && renderIndicators(ing.tags, 'ingredient')}
-                        <Icon name={ing.icon} size={26} className="mb-1 shrink-0" />
-                        <span className="text-[10px] font-black leading-none text-center w-full line-clamp-1 px-1">{ing.name}</span>
-                        {isActive && !isEditMode && <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-white rounded-full animate-pulse shadow-sm"></div>}
-                        {isEditMode && <div className="absolute -top-2 -right-2 bg-white text-slate-400 p-1.5 rounded-full border border-slate-100 shadow-md z-10 hover:text-emerald-500"><Pencil size={10} /></div>}
+                        <Icon name={ing.icon} size={16} className="mb-0.5 shrink-0" />
+                        <span className="text-[8px] font-black leading-none text-center w-full line-clamp-1 px-1">{ing.name}</span>
+                        {isActive && !isEditMode && <div className="absolute top-0.5 right-0.5 w-1 h-1 bg-white rounded-full animate-pulse"></div>}
+                        {isEditMode && <div className="absolute -top-1 -right-1 bg-white text-slate-400 p-0.5 rounded-full border border-slate-100 shadow-md z-10 hover:text-emerald-500"><Pencil size={8} /></div>}
                       </button>
                     )
                   })}
@@ -501,7 +500,7 @@ export default function App() {
             );
           })}
         </div>
-        <Modal isOpen={!!editingIngredient} onClose={() => setEditingIngredient(null)} title={isNewIngredient ? "Nuovo Ingrediente" : "Modifica"}>
+        <Modal isOpen={!!editingIngredient} onClose={() => setEditingIngredient(null)} title={isNewIngredient ? "Nuovo" : "Modifica"}>
           {editingIngredient && <IngredientEditor initialData={editingIngredient} isNew={isNewIngredient} onSave={saveIngredient} onDelete={deleteIngredient} onCancel={() => setEditingIngredient(null)} />}
         </Modal>
       </div>
@@ -517,28 +516,28 @@ export default function App() {
         return true;
     });
     return (
-    <div className="pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full flex flex-col">
-      <header className="p-5 md:pt-10 md:pb-8 bg-white/95 backdrop-blur-md sticky top-0 z-20 shadow-sm flex flex-col gap-4 rounded-b-2xl md:rounded-b-3xl">
-        <div className="flex justify-between items-center">
+    <div className="pb-24 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full flex flex-col">
+      <header className="p-5 md:pt-10 md:pb-8 bg-white/95 backdrop-blur-md sticky top-0 z-20 shadow-sm flex flex-col gap-2 rounded-b-3xl">
+        <div className="flex justify-between items-center mb-1">
             <h2 className="text-xl font-black text-slate-800 flex items-center gap-3">
-               <ChefHat className="text-emerald-500" size={24} strokeWidth={2.5}/> Ricettario ({displayedRecipes.length})
+               <ChefHat className="text-emerald-500" size={24} strokeWidth={2.5}/> Ricette ({displayedRecipes.length})
             </h2>
             <button onClick={() => { setIsNewRecipe(true); setEditingRecipe({ id: '', name: '', category: 'Primi', ingredients: [], optionalIngredients: [], tags: [], prepTime: 15, instructions: '', nutrition: { calories: 0, protein: 0 } }); }} className="p-3 bg-slate-100 text-slate-500 rounded-full hover:bg-emerald-500 hover:text-white transition-colors">
                <Plus size={20} strokeWidth={2.5} />
              </button>
         </div>
-        <div className="relative group">
+        <div className="relative group mb-1">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={18} />
-            <input type="text" placeholder="Cerca ricetta..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 pl-11 pr-4 py-3 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-inner border border-transparent" />
+            <input type="text" placeholder="Cerca..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 pl-11 pr-4 py-1.5 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-inner border border-transparent" />
         </div>
-        <div className="flex overflow-x-auto gap-2 no-scrollbar pb-1 -mx-5 px-5">
-           <button onClick={() => setActiveRecipeTab('Tutti')} className={`whitespace-nowrap px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${activeRecipeTab === 'Tutti' ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400'}`}>Tutti</button>
+        <div className="flex overflow-x-auto gap-1.5 no-scrollbar pb-0.5 justify-center mx-auto w-full">
+           <button onClick={() => setActiveRecipeTab('Tutti')} className={`whitespace-nowrap px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${activeRecipeTab === 'Tutti' ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400'}`}>Tutti</button>
            {['Primi', 'Secondi', 'Veg', 'Street'].map(cat => (
-             <button key={cat} onClick={() => setActiveRecipeTab(cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat as RecipeCategory)} className={`whitespace-nowrap px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${activeRecipeTab === (cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat) ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400'}`}>{cat}</button>
+             <button key={cat} onClick={() => setActiveRecipeTab(cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat as RecipeCategory)} className={`whitespace-nowrap px-2.5 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${activeRecipeTab === (cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat) ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400'}`}>{cat}</button>
            ))}
         </div>
+        {renderLegend({ clickable: true, activeTags: activeRecipeTags, onToggle: (tag) => { setActiveRecipeTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]) } })}
       </header>
-      {renderLegend({ clickable: true, activeTags: activeRecipeTags, onToggle: (tag) => { setActiveRecipeTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]) } })}
       <div className="p-4 pt-4 overflow-y-auto no-scrollbar flex-1">
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {displayedRecipes.map(r => {
@@ -567,17 +566,17 @@ export default function App() {
   };
 
   const renderBatch = () => (
-    <div className="pb-32 flex flex-col max-w-6xl mx-auto w-full md:px-8 h-full">
-      <header className="p-5 md:pt-10 md:pb-6 bg-white shadow-sm flex justify-between items-center mb-4 rounded-b-2xl md:rounded-b-3xl">
+    <div className="pb-24 flex flex-col max-w-6xl mx-auto w-full md:px-8 h-full">
+      <header className="p-5 md:pt-10 md:pb-6 bg-white shadow-sm flex justify-between items-center mb-4 rounded-b-3xl">
          <h2 className="text-xl font-black text-slate-800 flex items-center gap-3">
-           <CalendarDays className="text-emerald-500" size={24} strokeWidth={2.5}/> Pianificatore
+           <CalendarDays className="text-emerald-500" size={24} strokeWidth={2.5}/> Batch Cooking
          </h2>
       </header>
       <div className="flex-1 overflow-y-auto no-scrollbar">
         {state.mealPlan.length === 0 ? (
           <div className="px-5 flex flex-col gap-6 max-w-2xl mx-auto w-full pb-10">
             <div className="bg-white p-7 rounded-3xl shadow-sm border border-slate-100 space-y-7">
-              <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 uppercase tracking-[0.1em] border-b border-slate-50 pb-3"><SlidersHorizontal size={18} className="text-slate-400"/> Configurazione Piano</h3>
+              <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 uppercase tracking-[0.1em] border-b border-slate-50 pb-3"><SlidersHorizontal size={18} className="text-slate-400"/> Opzioni Piano</h3>
               <div className="flex justify-between items-center text-sm">
                   <span className="font-bold text-slate-700">Strategia</span>
                   <div className="bg-slate-100 p-1 rounded-xl flex shadow-inner">
@@ -587,7 +586,7 @@ export default function App() {
               </div>
               <div>
                 <div className="flex justify-between items-center mb-2.5">
-                   <span className="font-bold text-slate-700 text-sm">Giorni da pianificare</span>
+                   <span className="font-bold text-slate-700 text-sm">Giorni</span>
                    <span className="font-black text-2xl text-emerald-600">{batchDays}</span>
                 </div>
                 <input type="range" min="1" max="7" value={batchDays} onChange={(e) => setBatchDays(parseInt(e.target.value))} className="w-full h-2 bg-slate-200 rounded-full appearance-none accent-emerald-500 cursor-pointer" />
@@ -597,16 +596,16 @@ export default function App() {
                      <button key={m} onClick={() => setBatchMeals(m as any)} className={`py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 transition-all ${batchMeals === m ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-md scale-[1.02]' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>{m === 'lunch' ? 'Pranzo' : m === 'dinner' ? 'Cena' : 'Tutti'}</button>
                    ))}
               </div>
-              <button onClick={generatePlan} disabled={isGeneratingBatch} className="w-full bg-slate-900 text-white py-4.5 rounded-[1.5rem] font-bold hover:bg-slate-800 transition-all flex justify-center items-center gap-3 text-sm active:scale-95 shadow-xl shadow-slate-200 mt-4 h-14">
-                {isGeneratingBatch ? <RefreshCw className="animate-spin" size={20}/> : 'Genera Piano Settimanale'}
+              <button onClick={generatePlan} disabled={isGeneratingBatch} className="w-full bg-slate-900 text-white py-4 rounded-[1.5rem] font-bold hover:bg-slate-800 transition-all flex justify-center items-center gap-3 text-sm active:scale-95 shadow-xl shadow-slate-200 mt-4 h-14">
+                {isGeneratingBatch ? <RefreshCw className="animate-spin" size={20}/> : 'Genera Menu'}
               </button>
             </div>
           </div>
         ) : (
           <div className="px-5 space-y-4 pb-10">
             <div className="flex justify-between items-center px-1">
-               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Il tuo menu personalizzato</span>
-               <button onClick={() => setState(p => ({...p, mealPlan: []}))} className="text-[10px] text-red-500 font-bold bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors">Resetta Tutto</button>
+               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Menu</span>
+               <button onClick={() => setState(p => ({...p, mealPlan: []}))} className="text-[10px] text-red-500 font-bold bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors">Resetta</button>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               {state.mealPlan.map((day) => (
@@ -624,9 +623,9 @@ export default function App() {
             </div>
             <div className="bg-slate-900 text-slate-300 rounded-[2rem] p-7 shadow-2xl mt-6 relative overflow-hidden">
                <div className="absolute -right-8 -bottom-8 text-emerald-500/10"><ShoppingBasket size={150} /></div>
-               <h3 className="font-black text-white text-sm mb-5 flex items-center gap-3 border-b border-slate-700 pb-3 relative z-10 uppercase tracking-[0.2em]"><ShoppingBasket className="text-emerald-400" size={20}/> Lista della Spesa</h3>
+               <h3 className="font-black text-white text-sm mb-5 flex items-center gap-3 border-b border-slate-700 pb-3 relative z-10 uppercase tracking-[0.2em]"><ShoppingBasket className="text-emerald-400" size={20}/> Lista Spesa</h3>
                <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs relative z-10 font-medium">
-                  {getShoppingList().length === 0 ? <li className="opacity-50 italic py-2">Dispensa completa! Non serve comprare nulla.</li> : getShoppingList().map(id => {
+                  {getShoppingList().length === 0 ? <li className="opacity-50 italic py-2">Tutto in stock!</li> : getShoppingList().map(id => {
                     const ing = state.ingredients.find(i => i.id === id);
                     return <li key={id} className="flex items-center gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 hover:bg-slate-800 transition-colors"><div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div><span className="truncate text-slate-200">{ing?.name || id}</span></li>;
                   })}
@@ -647,21 +646,21 @@ export default function App() {
        });
     };
     return (
-      <div className="pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full flex flex-col">
-        <header className="p-5 md:pt-10 md:pb-6 bg-white shadow-sm flex justify-between items-center mb-4 rounded-b-2xl md:rounded-b-3xl">
+      <div className="pb-24 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full flex flex-col">
+        <header className="p-5 md:pt-10 md:pb-6 bg-white shadow-sm flex justify-between items-center mb-4 rounded-b-3xl">
            <h2 className="text-xl font-black text-slate-800 flex items-center gap-3">
-             <Settings className="text-slate-400" size={24}/> Parametri & Dati
+             <Settings className="text-slate-400" size={24}/> Impostazioni
            </h2>
         </header>
         <div className="px-4 space-y-6 overflow-y-auto no-scrollbar flex-1 pb-10">
           <section>
              <div className="bg-white rounded-3xl p-4 md:p-8 shadow-sm border border-slate-100">
-               <h3 className="text-xs font-black text-slate-800 mb-6 flex items-center gap-3 uppercase tracking-[0.2em] border-b border-slate-50 pb-3"><ListChecks size={20} className="text-emerald-500"/> Matrice Dietetica</h3>
+               <h3 className="text-xs font-black text-slate-800 mb-6 flex items-center gap-3 uppercase tracking-[0.2em] border-b border-slate-50 pb-3"><ListChecks size={20} className="text-emerald-500"/> Matrice Pasti</h3>
                <div className="overflow-x-auto no-scrollbar">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-slate-100">
-                      <th className="py-2 text-left text-slate-300 font-black text-[10px] uppercase tracking-widest">Tag</th>
+                      <th className="py-2 text-left text-slate-300 font-black text-[10px] uppercase tracking-widest">Tipo</th>
                       <th className="py-2 text-center w-20 md:w-32"><Sun size={18} className="mx-auto text-amber-500 mb-1"/><span className="text-[9px] font-black uppercase text-slate-400">Pranzo</span></th>
                       <th className="py-2 text-center w-20 md:w-32"><Moon size={18} className="mx-auto text-indigo-500 mb-1"/><span className="text-[9px] font-black uppercase text-slate-400">Cena</span></th>
                     </tr>
@@ -687,21 +686,19 @@ export default function App() {
                </div>
              </div>
           </section>
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-5 pb-10">
             <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col justify-between gap-6">
               <div>
-                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2"><Save size={14} className="text-blue-500"/> Backup Locale</h3>
-                <p className="text-sm text-slate-500 font-medium">Esporta lo stato corrente dell'app per backup o per migrare su un altro browser.</p>
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2"><Save size={14} className="text-blue-500"/> Backup</h3>
+                <p className="text-sm text-slate-500 font-medium">Esporta dati .json</p>
               </div>
-              <button onClick={() => { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state)); const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", `buonapp_backup_${new Date().toISOString().split('T')[0]}.json`); dl.click(); }} className="w-full py-4 bg-slate-50 text-emerald-600 font-black rounded-2xl border-2 border-slate-100 text-xs flex items-center justify-center gap-3 hover:bg-emerald-50 hover:border-emerald-100 transition-all active:scale-95 uppercase tracking-widest">
-                <Download size={18} /> Scarica Backup .json
+              <button onClick={() => { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state)); const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", `buonapp_backup.json`); dl.click(); }} className="w-full py-4 bg-slate-50 text-emerald-600 font-black rounded-2xl border-2 border-slate-100 text-xs flex items-center justify-center gap-3 hover:bg-emerald-50 hover:border-emerald-100 transition-all active:scale-95 uppercase tracking-widest">
+                <Download size={18} /> Scarica Backup
               </button>
             </div>
             <div className="bg-emerald-900 text-emerald-100 rounded-3xl p-8 shadow-2xl border border-emerald-800 text-center flex flex-col justify-center items-center">
                <h3 className="text-3xl font-black mb-1">BuonApp</h3>
-               <p className="text-[10px] font-black opacity-40 uppercase tracking-[0.3em]">Cucina Intelligente</p>
-               <div className="h-1 w-12 bg-emerald-500/50 rounded-full my-6"></div>
-               <p className="text-[10px] font-black opacity-30 uppercase tracking-widest">Versione 0.5.7</p>
+               <p className="text-[10px] font-black opacity-30 uppercase tracking-widest">Versione 0.5.8</p>
             </div>
           </section>
         </div>
@@ -756,14 +753,29 @@ export default function App() {
     </Modal>
   );
 
-  const NavItem = ({ id, icon: IconC, label }: { id: ViewMode; icon: any; label: string }) => {
+  const MobileNavButton = ({ id, icon: IconC, activeColor, label }: { id: ViewMode; icon: any; activeColor: string; label: string }) => {
     const isActive = activeTab === id;
+    if (id === 'home') {
+       return (
+         <button 
+           onClick={() => { setSearchQuery(''); setActiveTab(id); }}
+           className={`relative z-10 w-11 h-11 flex items-center justify-center rounded-full transition-all duration-300 active:scale-90 ${isActive ? 'bg-emerald-500 text-white shadow-[0_4px_15px_rgba(16,185,129,0.5)]' : 'bg-white/10 backdrop-blur-md text-slate-500'}`}
+         >
+           <Home size={22} strokeWidth={isActive ? 3 : 2} />
+         </button>
+       );
+    }
     return (
-      <button onClick={() => { setSearchQuery(''); setActiveTab(id); }} className={`group flex flex-col items-center justify-center w-full h-full transition-all duration-300 relative active:scale-[0.85] ${isActive ? 'text-emerald-700' : 'text-slate-500'}`}>
-        <div className={`flex flex-col items-center justify-center px-4 py-3 rounded-2xl transition-all duration-300 ${isActive ? 'bg-emerald-100/60 -translate-y-4 shadow-md scale-105' : 'bg-transparent'}`}>
-          <IconC size={26} strokeWidth={isActive ? 2.5 : 2.2} />
-          <span className={`text-[9px] font-black tracking-[0.1em] mt-1 transition-all ${isActive ? 'opacity-100' : 'opacity-0 h-0 overflow-hidden'}`}>{label}</span>
-        </div>
+      <button 
+        onClick={() => { setSearchQuery(''); setActiveTab(id); }} 
+        className={`flex flex-col items-center justify-center w-9 h-9 transition-all duration-300 active:scale-90`}
+      >
+        <IconC 
+          size={18} 
+          strokeWidth={isActive ? 3 : 2} 
+          className={`transition-all duration-300 ${isActive ? activeColor : 'text-slate-500/30'}`} 
+        />
+        <span className={`text-[6px] font-black uppercase tracking-tighter mt-0.5 transition-all ${isActive ? activeColor : 'opacity-0'}`}>{label}</span>
       </button>
     );
   };
@@ -793,7 +805,7 @@ export default function App() {
                <DesktopNavItem id="frigo" icon={Refrigerator} label="Dispensa" />
                <DesktopNavItem id="ricette" icon={ChefHat} label="Ricettario" />
                <DesktopNavItem id="batch" icon={CalendarDays} label="Batch Cooking" />
-               <DesktopNavItem id="parametri" icon={Settings} label="Parametri" />
+               <DesktopNavItem id="parametri" icon={Settings} label="Impostazioni" />
            </nav>
            <div className="p-8 border-t border-slate-50">
               <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 text-[12px] font-black text-slate-500 space-y-3">
@@ -815,18 +827,19 @@ export default function App() {
 
       {renderRecipeModal()}
 
-      <div className="md:hidden fixed bottom-0 left-0 w-full z-40 safe-bottom pointer-events-none">
-        <div className="max-w-md mx-auto pointer-events-auto">
-          <div className="bg-white/60 backdrop-blur-xl border-t border-slate-200 shadow-[0_-12px_40px_rgba(0,0,0,0.12)] h-22 px-4 rounded-t-[2.5rem] flex justify-between items-center pb-2">
-            <div className="flex-1 h-full flex items-center"><NavItem id="frigo" icon={Refrigerator} label="FRIGO" /></div>
-            <div className="flex-1 h-full flex items-center"><NavItem id="ricette" icon={ChefHat} label="RICETTE" /></div>
-            <div className="w-20 h-full flex items-center justify-center -mt-8">
-              <button onClick={() => setActiveTab('home')} className={`w-16 h-16 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 active:scale-90 ${activeTab === 'home' ? 'bg-emerald-500 scale-110 ring-8 ring-white/50 shadow-emerald-200/50' : 'bg-slate-800 shadow-slate-900/20'}`}>
-                <Home className="text-white" size={28} strokeWidth={2.5} />
-              </button>
-            </div>
-            <div className="flex-1 h-full flex items-center"><NavItem id="batch" icon={CalendarDays} label="BATCH" /></div>
-            <div className="flex-1 h-full flex items-center"><NavItem id="parametri" icon={Settings} label="PARAM" /></div>
+      {/* MOBILE NAVIGATION - ULTRA COMPACT MINIMALIST ISLE */}
+      <div className="md:hidden fixed bottom-5 left-0 w-full z-40 safe-bottom pointer-events-none px-12">
+        <div className="max-w-[280px] mx-auto relative pointer-events-auto">
+          {/* Glass Isle Overlay - Highly transparent and compact */}
+          <div className="bg-white/10 backdrop-blur-2xl h-12 rounded-full border border-white/20 flex items-center justify-between px-4 shadow-[0_8px_32px_rgba(0,0,0,0.1)] ring-1 ring-black/5">
+            <MobileNavButton id="frigo" icon={Refrigerator} activeColor="text-cyan-500" label="Frigo" />
+            <MobileNavButton id="ricette" icon={ChefHat} activeColor="text-orange-500" label="Ricette" />
+            
+            {/* Home Icon in center */}
+            <MobileNavButton id="home" icon={Home} activeColor="text-white" label="Home" />
+            
+            <MobileNavButton id="batch" icon={CalendarDays} activeColor="text-purple-500" label="Batch" />
+            <MobileNavButton id="parametri" icon={Settings} activeColor="text-slate-800" label="Impostazioni" />
           </div>
         </div>
       </div>
