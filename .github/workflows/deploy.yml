@@ -1,4 +1,4 @@
-name: Deploiement vers Alwaysdata
+name: Build et Deploiement Alwaysdata
 
 on:
   push:
@@ -9,26 +9,40 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # 1. On récupère le code
       - name: Récupération du code
         uses: actions/checkout@v4
 
+      # 2. On installe Node.js (le moteur pour construire le site)
+      - name: Installation Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      # 3. On installe les dépendances du projet
+      - name: Installation des dépendances
+        run: npm ci
+
+      # 4. On CONSTRUIT le site (crée le dossier 'dist')
+      - name: Construction (Build)
+        run: npm run build
+
+      # 5. On envoie SEULEMENT le dossier 'dist' vers Alwaysdata
       - name: Envoi via SSH (SCP)
         uses: appleboy/scp-action@master
         with:
-          # Ton hôte SSH Alwaysdata
           host: ssh-nmfs.alwaysdata.net
-          
-          # Ton nom d'utilisateur principal
           username: nmfs_github
-          
-          # UTILISATION DU MOT DE PASSE (Méthode simplifiée)
           password: ${{ secrets.SSH_PASSWORD }}
           
-          # On copie tout le contenu du dépôt
-          source: "."
+          # On prend le contenu du dossier 'dist' créé à l'étape 4
+          source: "dist/*"
           
-          # Vers ton dossier spécifique
-          target: "www/_nmfs/BuonApp/v05/"
+          # On l'envoie dans ton dossier serveur
+          target: "/home/nmfs/www/_nmfs/BuonApp/v05/"
           
-          # IMPORTANT : false pour ne pas tout effacer par erreur
-          rm: false
+          # IMPORTANT : On retire le préfixe 'dist' pour mettre les fichiers directement dans v05
+          strip_components: 1
+          
+          # On nettoie le dossier distant avant de copier
+          rm: true
