@@ -1,0 +1,301 @@
+import { Recipe } from '../types';
+
+export const RECIPES_SECONDI: Recipe[] = [
+  {
+    id: 'pollo_verdure_grigliate',
+    name: 'Pollo e Verdure Grigliate',
+    category: 'Secondi',
+    ingredients: ['chicken_breast', 'zucchini', 'peppers'],
+    optionalIngredients: ['eggplant', 'olive_oil'],
+    tags: ['isHighProtein'],
+    prepTime: 25,
+    instructions: "1. Grigliare il petto di pollo.\n2. Grigliare le verdure a fette.\n3. Condire con olio e sale.",
+    nutrition: { calories: 350, protein: 40 }
+  },
+  {
+    id: 'hamburger_cipolle',
+    name: 'Hamburger e Cipolle',
+    category: 'Secondi',
+    ingredients: ['burger_beef', 'onion'],
+    optionalIngredients: ['olive_oil', 'herbs'],
+    tags: ['isHighProtein', 'isGourmand'],
+    prepTime: 15,
+    instructions: "1. Caramellare le cipolle.\n2. Cuocere l'hamburger alla piastra.\n3. Servire insieme.",
+    nutrition: { calories: 450, protein: 25 }
+  },
+  {
+    id: 'polpette_sugo',
+    name: 'Polpette al Sugo',
+    category: 'Secondi',
+    ingredients: ['minced_meat', 'tomato_sauce', 'eggs'],
+    optionalIngredients: ['bread', 'parmesan'],
+    tags: ['isHighProtein', 'isGourmand'],
+    prepTime: 40,
+    instructions: "1. Impastare carne, uova e pane.\n2. Formare polpette e rosolare.\n3. Cuocere nel sugo per 20 min.",
+    nutrition: { calories: 500, protein: 30 }
+  },
+  {
+    id: 'spezzatino_tacchino_piselli',
+    name: 'Spezzatino Tacchino e Piselli',
+    category: 'Secondi',
+    ingredients: ['turkey_breast', 'peas', 'onion'],
+    optionalIngredients: ['carrots', 'flour'],
+    tags: ['isHighProtein', 'isLunchbox'],
+    prepTime: 35,
+    instructions: "1. Infarinare i bocconcini di tacchino.\n2. Rosolare con cipolla.\n3. Unire piselli e brodo e cuocere.",
+    nutrition: { calories: 400, protein: 35 }
+  },
+  {
+    id: 'carne_pizzaiola',
+    name: 'Carne alla Pizzaiola',
+    category: 'Secondi',
+    ingredients: ['beef_steak', 'tomato_sauce', 'garlic'],
+    optionalIngredients: ['herbs', 'olive_oil'],
+    tags: ['isHighProtein'],
+    prepTime: 15,
+    instructions: "1. Cuocere le fettine nel pomodoro con aglio e origano per pochi minuti.",
+    nutrition: { calories: 350, protein: 30 }
+  },
+  {
+    id: 'straccetti_tacchino_rucola',
+    name: 'Straccetti Tacchino e Rucola',
+    category: 'Secondi',
+    ingredients: ['turkey_breast', 'arugula', 'parmesan'],
+    optionalIngredients: ['olive_oil', 'lemon'],
+    tags: ['isHighProtein'],
+    prepTime: 15,
+    instructions: "1. Saltare gli straccetti in padella.\n2. Servire su letto di rucola con scaglie di grana.",
+    nutrition: { calories: 300, protein: 35 }
+  },
+  {
+    id: 'zucchine_ripiene',
+    name: 'Zucchine Ripiene',
+    category: 'Secondi',
+    ingredients: ['zucchini', 'minced_meat', 'parmesan'],
+    optionalIngredients: ['eggs', 'bread'],
+    tags: ['isHighProtein', 'isGourmand'],
+    prepTime: 40,
+    instructions: "1. Svuotare le zucchine.\n2. Mescolare polpa, carne e formaggio.\n3. Riempire e infornare.",
+    nutrition: { calories: 400, protein: 25 }
+  },
+  {
+    id: 'pollo_peperoni',
+    name: 'Pollo ai Peperoni',
+    category: 'Secondi',
+    ingredients: ['chicken_breast', 'peppers', 'onion'],
+    optionalIngredients: ['tomato_sauce'],
+    tags: ['isHighProtein'],
+    prepTime: 30,
+    instructions: "1. Tagliare pollo e peperoni a pezzi.\n2. Cuocere in padella con coperchio finché teneri.",
+    nutrition: { calories: 350, protein: 30 }
+  },
+  {
+    id: 'frittata_spinaci',
+    name: 'Frittata di Spinaci',
+    category: 'Secondi',
+    ingredients: ['eggs', 'spinach_fresh', 'parmesan'],
+    optionalIngredients: ['onion', 'olive_oil'],
+    tags: ['isVegetarian', 'isHighProtein', 'isLunchbox'],
+    prepTime: 15,
+    instructions: "1. Sbattere le uova con il parmigiano.\n2. Saltare gli spinaci in padella.\n3. Unire le uova e cuocere da entrambi i lati.",
+    nutrition: { calories: 300, protein: 25 }
+  },
+  {
+    id: 'omelette_funghi_mozzarella',
+    name: 'Omelette Funghi e Mozzarella',
+    category: 'Secondi',
+    ingredients: ['eggs', 'mushrooms', 'mozzarella'],
+    optionalIngredients: ['parsley'],
+    tags: ['isVegetarian', 'isHighProtein', 'isGourmand'],
+    prepTime: 15,
+    instructions: "1. Cuocere i funghi.\n2. Fare l'omelette e farcire con funghi e mozzarella prima di chiudere.",
+    nutrition: { calories: 350, protein: 20 }
+  },
+  {
+    id: 'uova_purgatorio',
+    name: 'Uova in Purgatorio',
+    category: 'Secondi',
+    ingredients: ['eggs', 'tomato_sauce'],
+    optionalIngredients: ['onion', 'bread'],
+    tags: ['isVegetarian', 'isHighProtein', 'isGourmand'],
+    prepTime: 15,
+    instructions: "1. Scaldare il sugo di pomodoro.\n2. Rompere le uova dentro e cuocere col coperchio.",
+    nutrition: { calories: 250, protein: 15 }
+  },
+  {
+    id: 'tagliata_tacchino_funghi',
+    name: 'Tagliata Tacchino e Funghi',
+    category: 'Secondi',
+    ingredients: ['turkey_breast', 'mushrooms'],
+    optionalIngredients: ['arugula', 'olive_oil'],
+    tags: ['isHighProtein'],
+    prepTime: 20,
+    instructions: "1. Grigliare la fesa intera e tagliarla a fette.\n2. Servire con funghi trifolati.",
+    nutrition: { calories: 300, protein: 35 }
+  },
+  {
+    id: 'pollo_zucchine_carote',
+    name: 'Pollo Zucchine e Carote',
+    category: 'Secondi',
+    ingredients: ['chicken_breast', 'zucchini', 'carrots'],
+    optionalIngredients: ['onion', 'soy_sauce'],
+    tags: ['isHighProtein', 'isLunchbox'],
+    prepTime: 25,
+    instructions: "1. Tagliare tutto a bastoncini.\n2. Saltare nel wok o padella a fiamma alta.",
+    nutrition: { calories: 320, protein: 30 }
+  },
+  {
+    id: 'polpette_piselli',
+    name: 'Polpette con Piselli',
+    category: 'Secondi',
+    ingredients: ['minced_meat', 'peas', 'onion'],
+    optionalIngredients: ['tomato_sauce'],
+    tags: ['isHighProtein', 'isGourmand'],
+    prepTime: 35,
+    instructions: "1. Rosolare le polpette.\n2. Aggiungere piselli e un po' d'acqua o pomodoro. Cuocere.",
+    nutrition: { calories: 450, protein: 25 }
+  },
+  {
+    id: 'tacchino_pesto',
+    name: 'Tacchino al Pesto',
+    category: 'Secondi',
+    ingredients: ['turkey_breast', 'pesto'],
+    optionalIngredients: ['tomatoes', 'mozzarella'],
+    tags: ['isHighProtein', 'isGourmand'],
+    prepTime: 15,
+    instructions: "1. Cuocere le fettine di tacchino.\n2. A fine cottura aggiungere un cucchiaio di pesto sopra.",
+    nutrition: { calories: 350, protein: 30 }
+  },
+  {
+    id: 'scaloppine_limone',
+    name: 'Scaloppine al Limone',
+    category: 'Secondi',
+    ingredients: ['turkey_breast', 'lemon', 'flour'],
+    optionalIngredients: ['butter', 'parsley'],
+    tags: ['isHighProtein', 'isGourmand'],
+    prepTime: 15,
+    instructions: "1. Infarinare le fettine.\n2. Rosolare nel burro/olio.\n3. Sfumare col succo di limone.",
+    nutrition: { calories: 300, protein: 28 }
+  },
+  {
+    id: 'hamburger_cavallo',
+    name: 'Hamburger a Cavallo',
+    category: 'Secondi',
+    ingredients: ['burger_beef', 'eggs'],
+    optionalIngredients: ['oil', 'pepper'],
+    tags: ['isHighProtein', 'isGourmand'],
+    prepTime: 15,
+    instructions: "1. Cuocere l'hamburger.\n2. Cuocere l'uovo all'occhio di bue.\n3. Adagiare l'uovo sulla carne.",
+    nutrition: { calories: 500, protein: 35 }
+  },
+  {
+    id: 'peperoni_ripieni',
+    name: 'Peperoni Ripieni',
+    category: 'Secondi',
+    ingredients: ['peppers', 'minced_meat', 'eggs'],
+    optionalIngredients: ['parmesan', 'bread'],
+    tags: ['isHighProtein', 'isGourmand'],
+    prepTime: 45,
+    instructions: "1. Tagliare la calotta ai peperoni.\n2. Riempire con impasto di carne.\n3. Infornare.",
+    nutrition: { calories: 450, protein: 25 }
+  },
+  {
+    id: 'frittata_zucchine_cipolle',
+    name: 'Frittata Zucchine e Cipolle',
+    category: 'Secondi',
+    ingredients: ['eggs', 'zucchini', 'onion'],
+    optionalIngredients: ['parmesan'],
+    tags: ['isVegetarian', 'isHighProtein'],
+    prepTime: 20,
+    instructions: "1. Soffriggere cipolla e zucchine.\n2. Versare le uova sbattute e cuocere.",
+    nutrition: { calories: 320, protein: 20 }
+  },
+  {
+    id: 'gamberi_piselli',
+    name: 'Gamberi e Piselli',
+    category: 'Secondi',
+    ingredients: ['shrimp', 'peas'],
+    optionalIngredients: ['onion', 'tomato_sauce'],
+    tags: ['isHighProtein'],
+    prepTime: 15,
+    instructions: "1. Cuocere i piselli.\n2. Aggiungere i gamberi negli ultimi minuti.",
+    nutrition: { calories: 250, protein: 25 }
+  },
+  {
+    id: 'merluzzo_pizzaiola',
+    name: 'Merluzzo alla Pizzaiola',
+    category: 'Secondi',
+    ingredients: ['cod', 'tomato_sauce', 'olives'],
+    optionalIngredients: ['capers', 'herbs'],
+    tags: ['isHighProtein'],
+    prepTime: 20,
+    instructions: "1. Cuocere il pomodoro con olive e capperi.\n2. Immergere i filetti di merluzzo e cuocere.",
+    nutrition: { calories: 280, protein: 30 }
+  },
+  {
+    id: 'merluzzo_forno_patate',
+    name: 'Merluzzo al Forno con Patate',
+    category: 'Secondi',
+    ingredients: ['cod', 'potato', 'herbs'],
+    optionalIngredients: ['bread', 'olive_oil'],
+    tags: ['isHighProtein'],
+    prepTime: 35,
+    instructions: "1. Disporre patate a fette e pesce in teglia.\n2. Cospargere con pangrattato e erbe.\n3. Infornare.",
+    nutrition: { calories: 350, protein: 28 }
+  },
+  {
+    id: 'gamberetti_aglio_olio',
+    name: 'Gamberetti Aglio e Olio',
+    category: 'Secondi',
+    ingredients: ['shrimp', 'garlic', 'chili'],
+    optionalIngredients: ['olive_oil', 'parsley'],
+    tags: ['isHighProtein'],
+    prepTime: 10,
+    instructions: "1. Rosolare aglio e peperoncino.\n2. Saltare i gamberetti per pochi minuti.",
+    nutrition: { calories: 200, protein: 25 }
+  },
+  {
+    id: 'polpette_tonno_patate',
+    name: 'Polpette Tonno e Patate',
+    category: 'Secondi',
+    ingredients: ['tuna_can', 'potato', 'eggs'],
+    optionalIngredients: ['bread', 'parsley'],
+    tags: ['isHighProtein', 'isLunchbox', 'isGourmand'],
+    prepTime: 30,
+    instructions: "1. Mischiare patate lesse, tonno e uova.\n2. Formare polpette e panare.\n3. Cuocere in forno o padella.",
+    nutrition: { calories: 380, protein: 22 }
+  },
+  {
+    id: 'carpaccio_bresaola',
+    name: 'Carpaccio di Bresaola',
+    category: 'Secondi',
+    ingredients: ['bresaola', 'arugula', 'parmesan'],
+    optionalIngredients: ['lemon', 'olive_oil'],
+    tags: ['isHighProtein', 'isLunchbox'],
+    prepTime: 5,
+    instructions: "1. Disporre la bresaola sul piatto.\n2. Coprire con rucola e scaglie di grana.\n3. Condire con olio e limone.",
+    nutrition: { calories: 250, protein: 30 }
+  },
+  {
+    id: 'insalata_pollo_patate',
+    name: 'Insalata Pollo e Patate',
+    category: 'Secondi',
+    ingredients: ['chicken_breast', 'potato'],
+    optionalIngredients: ['olive_oil', 'herbs'],
+    tags: ['isHighProtein', 'isLunchbox'],
+    prepTime: 25,
+    instructions: "1. Lessare le patate e grigliare il pollo.\n2. Tagliare a cubetti e unire.\n3. Condire a freddo.",
+    nutrition: { calories: 400, protein: 25 }
+  },
+  {
+    id: 'insalata_mare',
+    name: 'Insalata di Mare Tiepida',
+    category: 'Secondi',
+    ingredients: ['shrimp', 'lemon'],
+    optionalIngredients: ['carrots', 'celery', 'olive_oil'],
+    tags: ['isHighProtein'],
+    prepTime: 20,
+    instructions: "1. Lessare il pesce.\n2. Unire a verdure crude croccanti.\n3. Condire con citronette.",
+    nutrition: { calories: 300, protein: 25 }
+  }
+];

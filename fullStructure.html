@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BuonApp - Specifiche Tecniche</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; color: #334155; }
+        .card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 24px; margin-bottom: 24px; box-shadow: 0 1px 2px rgba(0,0,0,0.05); }
+        .tag { padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        h2 { font-weight: 900; font-size: 1.5rem; margin-bottom: 1rem; color: #0f172a; }
+        h3 { font-weight: 700; font-size: 1.25rem; margin-bottom: 0.5rem; color: #1e293b; }
+        ul { list-style-type: disc; padding-left: 20px; }
+        li { margin-bottom: 8px; }
+    </style>
+</head>
+<body class="bg-slate-50 p-6 md:p-12 max-w-5xl mx-auto">
+
+    <header class="mb-12 border-b border-slate-200 pb-8">
+        <h1 class="text-4xl font-black text-emerald-600 mb-2">BuonApp</h1>
+        <p class="text-lg text-slate-500 font-medium">Struttura Completa dell'Applicazione & Specifiche Funzionali</p>
+    </header>
+
+    <!-- 1. OBIETTIVO -->
+    <section class="mb-12">
+        <h2>1. Scopo & Obiettivo</h2>
+        <div class="card">
+            <p class="mb-4 text-lg">
+                <strong>BuonApp</strong> è una Progressive Web App (PWA) di gestione domestica progettata per risolvere il problema quotidiano: <em>"Cosa mangiamo oggi?"</em>
+            </p>
+            <p>Funziona come un ponte tra la <strong>Dispensa</strong> dell'utente (Frigo/Dispensa) e un <strong>Database di Ricette</strong> curato. La filosofia principale è minimizzare lo spreco alimentare dando priorità alle ricette che utilizzano ingredienti già disponibili, fornendo al contempo strumenti per la pianificazione automatica dei pasti (Batch Cooking) e la generazione della lista della spesa.</p>
+        </div>
+    </section>
+
+    <!-- 2. PANORAMICA INTERFACCIA -->
+    <section class="mb-12">
+        <h2>2. Interfaccia & Navigazione</h2>
+        <p class="mb-6">L'app presenta un design a pagina singola, mobile-first (architettura "App Shell"). La navigazione è gestita tramite una barra inferiore fissa con cinque schede distinte.</p>
+        
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-4 text-center text-xs font-bold text-slate-500">
+            <div class="bg-white p-4 rounded-xl border border-slate-200">
+                <div class="text-2xl mb-2">🏠</div>
+                HOME (Dashboard)
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200">
+                <div class="text-2xl mb-2">🧊</div>
+                FRIGO (Dispensa)
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200">
+                <div class="text-2xl mb-2">👨‍🍳</div>
+                RICETTE (Catalogo)
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200">
+                <div class="text-2xl mb-2">📅</div>
+                BATCH (Pianificatore)
+            </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200">
+                <div class="text-2xl mb-2">⚙️</div>
+                PARAM (Impostazioni)
+            </div>
+        </div>
+    </section>
+
+    <!-- 3. DETTAGLIO SEZIONI -->
+    <section class="space-y-12">
+        <h2>3. Dettaglio delle Sezioni</h2>
+
+        <!-- FRIGO -->
+        <div>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="tag bg-blue-100 text-blue-700">FRIGO</span>
+                <h3>Gestione Dispensa</h3>
+            </div>
+            <div class="card">
+                <ul>
+                    <li><strong>Layout:</strong> Una griglia di icone che rappresentano gli ingredienti, raggruppati per categoria (Dispensa, Verdure, Surgelati, Proteine, Freschi).</li>
+                    <li><strong>Interazione:</strong> 
+                        <ul class="list-none pl-0 mt-2">
+                            <li>Tocco per cambiare stato: <span class="text-emerald-600 font-bold">Colorato</span> = Disponibile, <span class="text-slate-400">Grigio</span> = Mancante.</li>
+                            <li>Pressione prolungata o Modalità Modifica per cambiare i dettagli.</li>
+                        </ul>
+                    </li>
+                    <li><strong>Funzionalità:</strong>
+                        <ul class="mt-2">
+                            <li><strong>Barra di Ricerca:</strong> Filtraggio in tempo reale degli ingredienti.</li>
+                            <li><strong>Legenda/Filtri:</strong> Filtra la vista per tag dietetici (es. mostra solo articoli Vegetariani).</li>
+                            <li><strong>CRUD:</strong> Possibilità completa di Creare, Leggere, Aggiornare ed Eliminare ingredienti personalizzati.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RICETTE -->
+        <div>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="tag bg-orange-100 text-orange-700">RICETTE</span>
+                <h3>Catalogo Ricette</h3>
+            </div>
+            <div class="card">
+                <ul>
+                    <li><strong>Motore di Cucinabilità:</strong> La lista indica visivamente se una ricetta può essere cucinata <em>ora</em>.
+                        <ul class="list-none pl-0 mt-2 text-sm">
+                            <li class="flex items-center gap-2 mb-1"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> <strong>Semaforo Verde:</strong> 100% ingredienti disponibili.</li>
+                            <li class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-orange-400"></span> <strong>Semaforo Arancione:</strong> Ingredienti mancanti (visualizzati come "Mancano X").</li>
+                        </ul>
+                    </li>
+                    <li><strong>Filtri:</strong> Schede per categorie (Primi, Secondi, Veg, Street Food) e tag dietetici.</li>
+                    <li><strong>Modale Ricetta:</strong> Mostra tempo di preparazione, info nutrizionali (calorie/proteine), ingredienti (posseduti vs mancanti) e istruzioni passo-passo.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- BATCH -->
+        <div>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="tag bg-purple-100 text-purple-700">BATCH</span>
+                <h3>Pianificatore Pasti</h3>
+            </div>
+            <div class="card">
+                <p class="mb-4">Un algoritmo che genera un piano alimentare per N giorni basato sulle preferenze dell'utente.</p>
+                <ul>
+                    <li><strong>Configurazione:</strong>
+                        <ul class="mt-2">
+                            <li><strong>Durata:</strong> Slider da 1 a 7 giorni.</li>
+                            <li><strong>Ambito:</strong> Solo Pranzo, Solo Cena o Entrambi.</li>
+                            <li><strong>Strategia:</strong>
+                                <br> - <em>Eco:</em> Prioritizza ricette che usano l'inventario attuale per ridurre sprechi.
+                                <br> - <em>Varietà:</em> Assicura che proteine/verdure non vengano ripetute consecutivamente.
+                            </li>
+                        </ul>
+                    </li>
+                    <li><strong>Lista Spesa:</strong> Aggrega automaticamente gli ingredienti necessari per il piano generato che NON sono attualmente presenti in dispensa.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- PARAM -->
+        <div>
+            <div class="flex items-center gap-3 mb-4">
+                <span class="tag bg-slate-100 text-slate-700">PARAM</span>
+                <h3>Impostazioni & Dati</h3>
+            </div>
+            <div class="card">
+                <ul>
+                    <li><strong>Matrice Dietetica:</strong> Una tabella di configurazione che permette agli utenti di imporre regole dietetiche rigide per tipo di pasto.
+                        <br><em>Esempio: "Il pranzo deve essere sempre Vegetariano", "La cena deve essere Proteica".</em>
+                    </li>
+                    <li><strong>Persistenza Dati:</strong>
+                        <ul class="mt-2">
+                            <li>Tutti i dati sono salvati localmente nel browser (LocalStorage).</li>
+                            <li><strong>Backup:</strong> Pulsante "Esporta JSON" per scaricare lo stato completo (Inventario + Ricette + Piani) per backup o trasferimento.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer class="text-center text-slate-400 text-sm mt-12 border-t border-slate-200 pt-8">
+        Generato per il Progetto BuonApp
+    </footer>
+
+</body>
+</html>

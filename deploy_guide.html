@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida al Deploy - BuonApp</title>
+    <style>
+        body { font-family: system-ui, -apple-system, sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; color: #333; }
+        h1 { color: #10b981; border-bottom: 2px solid #10b981; padding-bottom: 10px; }
+        h2 { margin-top: 30px; color: #065f46; }
+        .step { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        code { background: #f1f5f9; padding: 2px 5px; border-radius: 4px; font-family: monospace; color: #e11d48; font-size: 0.9em; }
+        .important { background: #fff7ed; border: 1px solid #fed7aa; padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #9a3412; font-weight: bold;}
+        .error-fix { background: #fef2f2; border: 1px solid #fecaca; padding: 15px; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Guida al Deploy Semplificata</h1>
+    
+    <div class="important">
+        ⚠️ IMPORTANTE: Questa è un'applicazione Client-Side (React). Non richiede un server Node.js attivo per funzionare in produzione, ma solo un server web statico (Apache/Nginx). Tuttavia, Node.js serve per "costruire" (build) l'app.
+    </div>
+
+    <h2>Risoluzione Errore "Killed" (Memoria Insufficiente)</h2>
+    <div class="error-fix">
+        <p>Se ricevi l'errore <code>Killed</code> durante <code>npm install</code>, il tuo server ha finito la RAM. Prova uno di questi comandi:</p>
+        <ol>
+            <li><strong>Installazione leggera (consigliato):</strong>
+                <br><code>npm install --omit=optional</code>
+            </li>
+            <li><strong>Forzare limite memoria:</strong>
+                <br><code>NODE_OPTIONS="--max-old-space-size=512" npm install</code>
+            </li>
+        </ol>
+    </div>
+
+    <h2>Passo 1: Pulizia</h2>
+    <div class="step">
+        <p>Accedi al tuo server/FTP nella cartella di destinazione.</p>
+        <p>Assicurati di avere i file <code>package.json</code> e <code>index.html</code> aggiornati.</p>
+    </div>
+
+    <h2>Passo 2: Build (Costruzione)</h2>
+    <div class="step">
+        <p>Una volta completato <code>npm install</code>, esegui:</p>
+        <p><code>npm run build</code></p>
+        <p>Questo creerà una cartella <code>dist/</code> ottimizzata.</p>
+    </div>
+
+    <h2>Passo 3: Verifica</h2>
+    <div class="step">
+        <p>Apri il tuo browser all'indirizzo dove hai caricato i file.</p>
+        <p>L'applicazione dovrebbe caricarsi immediatamente. Se vedi uno schermo bianco, apri la Console (F12) per verificare eventuali errori.</p>
+    </div>
+
+</body>
+</html>

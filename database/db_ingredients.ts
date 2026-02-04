@@ -1,0 +1,73 @@
+import { Ingredient } from '../types';
+
+export const INITIAL_INGREDIENTS: Ingredient[] = [
+  // --- Dispensa (Pantry) ---
+  { id: 'pasta', name: 'Pasta', category: 'dispensa', icon: 'Wheat', tags: ['isHighCarb', 'isVegetarian', 'containsGluten'] },
+  { id: 'rice', name: 'Riso', category: 'dispensa', icon: 'Bowl', tags: ['isHighCarb', 'isVegetarian'] },
+  { id: 'bread', name: 'Pane', category: 'dispensa', icon: 'Wheat', tags: ['isHighCarb', 'containsGluten', 'isVegetarian'] },
+  { id: 'spelt', name: 'Farro', category: 'dispensa', icon: 'Wheat', tags: ['isHighCarb', 'containsGluten', 'isVegetarian'] },
+  { id: 'couscous', name: 'Couscous', category: 'dispensa', icon: 'Wheat', tags: ['isHighCarb', 'containsGluten', 'isVegetarian'] },
+  { id: 'piadina', name: 'Piadina', category: 'dispensa', icon: 'Cookie', tags: ['isHighCarb', 'containsGluten', 'isVegetarian'] },
+  { id: 'flour', name: 'Farina', category: 'dispensa', icon: 'Wheat', tags: ['isHighCarb', 'containsGluten', 'isVegetarian'] },
+  { id: 'tomato_sauce', name: 'Passata di Pomodoro', category: 'dispensa', icon: 'Soup', tags: ['isVegetarian'] },
+  { id: 'olive_oil', name: 'Olio d\'Oliva', category: 'dispensa', icon: 'Droplet', tags: ['isVegetarian', 'isGourmand'] },
+  { id: 'chickpeas', name: 'Ceci', category: 'dispensa', icon: 'Bowl', tags: ['isVegetarian', 'isHighProtein', 'isHighCarb'] },
+  { id: 'lentils', name: 'Lenticchie', category: 'dispensa', icon: 'Bowl', tags: ['isVegetarian', 'isHighProtein', 'isHighCarb'] },
+  { id: 'beans', name: 'Fagioli', category: 'dispensa', icon: 'Bowl', tags: ['isVegetarian', 'isHighProtein', 'isHighCarb'] },
+  { id: 'pesto', name: 'Pesto', category: 'dispensa', icon: 'Soup', tags: ['isVegetarian', 'isGourmand', 'containsLactose'] },
+  { id: 'salt_pepper', name: 'Sale e Pepe', category: 'dispensa', icon: 'Droplet', tags: ['isVegetarian'] },
+  { id: 'herbs', name: 'Aromi (Rosmarino...)', category: 'dispensa', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'capers', name: 'Capperi', category: 'dispensa', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'olives', name: 'Olive', category: 'dispensa', icon: 'Bowl', tags: ['isVegetarian', 'isGourmand'] },
+  { id: 'chili', name: 'Peperoncino', category: 'dispensa', icon: 'Carrot', tags: ['isVegetarian'] },
+
+  // --- Verdure (Vegetables) ---
+  { id: 'zucchini', name: 'Zucchine', category: 'verdure', icon: 'Carrot', tags: ['isVegetarian'] },
+  { id: 'onion', name: 'Cipolle', category: 'verdure', icon: 'Carrot', tags: ['isVegetarian'] },
+  { id: 'garlic', name: 'Aglio', category: 'verdure', icon: 'Carrot', tags: ['isVegetarian'] },
+  { id: 'potato', name: 'Patate', category: 'verdure', icon: 'Cookie', tags: ['isVegetarian', 'isHighCarb'] },
+  { id: 'eggplant', name: 'Melanzane', category: 'verdure', icon: 'Carrot', tags: ['isVegetarian'] },
+  { id: 'carrots', name: 'Carote', category: 'verdure', icon: 'Carrot', tags: ['isVegetarian'] },
+  { id: 'tomatoes', name: 'Pomodori freschi', category: 'verdure', icon: 'Apple', tags: ['isVegetarian'] },
+  { id: 'mushrooms', name: 'Funghi freschi', category: 'verdure', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'cauliflower', name: 'Cavolfiore', category: 'verdure', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'leeks', name: 'Porri', category: 'verdure', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'fennel', name: 'Finocchi', category: 'verdure', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'salad', name: 'Insalata verde', category: 'verdure', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'peppers', name: 'Peperoni', category: 'verdure', icon: 'Carrot', tags: ['isVegetarian'] },
+  { id: 'spinach_fresh', name: 'Spinaci freschi', category: 'verdure', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'arugula', name: 'Rucola', category: 'verdure', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'celery', name: 'Sedano', category: 'verdure', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'broccoli', name: 'Broccoli', category: 'verdure', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'asparagus', name: 'Asparagi', category: 'verdure', icon: 'Carrot', tags: ['isVegetarian'] },
+  { id: 'pumpkin', name: 'Zucca', category: 'verdure', icon: 'Apple', tags: ['isVegetarian'] },
+  { id: 'lemon', name: 'Limoni', category: 'verdure', icon: 'Apple', tags: ['isVegetarian'] },
+
+  // --- Surgelati (Frozen) ---
+  { id: 'spinach_frozen', name: 'Spinaci surgelati', category: 'surgelati', icon: 'Snowflake', tags: ['isVegetarian'] },
+  { id: 'peas', name: 'Piselli', category: 'surgelati', icon: 'Leaf', tags: ['isVegetarian', 'isHighProtein'] },
+  { id: 'green_beans', name: 'Fagiolini', category: 'surgelati', icon: 'Leaf', tags: ['isVegetarian'] },
+  { id: 'mixed_veg', name: 'Misto Verdure', category: 'surgelati', icon: 'Snowflake', tags: ['isVegetarian'] },
+  { id: 'shrimp', name: 'Gamberetti', category: 'surgelati', icon: 'Fish', tags: ['isHighProtein'] },
+  { id: 'cod', name: 'Merluzzo', category: 'surgelati', icon: 'Fish', tags: ['isHighProtein'] },
+
+  // --- Proteine ---
+  { id: 'chicken_breast', name: 'Petto di Pollo', category: 'proteine', icon: 'Drumstick', tags: ['isHighProtein'] },
+  { id: 'turkey_breast', name: 'Filetto di Tacchino', category: 'proteine', icon: 'Drumstick', tags: ['isHighProtein'] },
+  { id: 'minced_meat', name: 'Macinato di manzo', category: 'proteine', icon: 'Beef', tags: ['isHighProtein'] },
+  { id: 'burger_beef', name: 'Hamburger di manzo', category: 'proteine', icon: 'Beef', tags: ['isHighProtein', 'isGourmand'] },
+  { id: 'beef_steak', name: 'Fettina di Manzo', category: 'proteine', icon: 'Beef', tags: ['isHighProtein', 'isExpensive'] },
+  { id: 'eggs', name: 'Uova', category: 'proteine', icon: 'Egg', tags: ['isHighProtein', 'isVegetarian'] },
+  { id: 'tuna_can', name: 'Tonno in scatola', category: 'proteine', icon: 'Fish', tags: ['isHighProtein'] },
+
+  // --- Freschi (Dairy/Fresh) ---
+  { id: 'mozzarella', name: 'Mozzarella', category: 'freschi', icon: 'Milk', tags: ['isVegetarian', 'containsLactose'] },
+  { id: 'mozzarella_lactose_free', name: 'Mozzarella (Senza Lattosio)', category: 'freschi', icon: 'Milk', tags: ['isVegetarian'] },
+  { id: 'parmesan', name: 'Parmigiano', category: 'freschi', icon: 'Milk', tags: ['isVegetarian', 'containsLactose', 'isGourmand'] },
+  { id: 'butter', name: 'Burro', category: 'freschi', icon: 'Cookie', tags: ['isVegetarian', 'containsLactose', 'isGourmand'] },
+  { id: 'pinsa_base', name: 'Base Pinsa', category: 'freschi', icon: 'Pizza', tags: ['isHighCarb', 'containsGluten', 'isVegetarian', 'isGourmand'] },
+  { id: 'focaccia', name: 'Focaccia', category: 'freschi', icon: 'Pizza', tags: ['isHighCarb', 'containsGluten', 'isVegetarian', 'isGourmand'] },
+  { id: 'bresaola', name: 'Bresaola', category: 'freschi', icon: 'Beef', tags: ['isHighProtein', 'isExpensive'] },
+  { id: 'veggie_burger', name: 'Burger vegetariano', category: 'freschi', icon: 'Sandwich', tags: ['isVegetarian', 'isHighProtein'] },
+  { id: 'soup_ready', name: 'Zuppa pronta', category: 'freschi', icon: 'Soup', tags: ['isVegetarian', 'isLunchbox'] },
+];
