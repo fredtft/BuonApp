@@ -133,17 +133,6 @@ export default function App() {
     localStorage.setItem('buonapp_state', JSON.stringify(state));
   }, [state]);
 
-  // Keyboard Shortcuts
-  useEffect(() => {
-    const handleKey = (e: KeyboardEvent) => {
-      if (activeTab === 'home' && e.key.toLowerCase() === 's') {
-        setShowRecipeListModal(true);
-      }
-    };
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [activeTab]);
-
   // Logic: Filter Recipes (Home)
   const filteredRecipes = useMemo(() => {
     let list = state.recipes;
@@ -313,26 +302,54 @@ export default function App() {
     return Object.keys(need);
   };
 
-  const renderIndicators = (tags: DietTag[]) => {
+  const renderIndicators = (tags: DietTag[], type: 'ingredient' | 'recipe' = 'ingredient') => {
+    const relevantTags = tags.filter(tag => INDICATORS_CONFIG[tag]);
+    if (relevantTags.length === 0) return null;
+
+    if (type === 'ingredient') {
+      return (
+        <div className="absolute top-1 left-1 flex gap-0.5 z-10">
+          {relevantTags.map(tag => {
+            const ind = INDICATORS_CONFIG[tag];
+            return (
+              <div 
+                key={tag} 
+                className={`w-2.5 h-2.5 rounded-full border-2 border-white shadow-sm ${ind?.color}`}
+                title={ind?.label}
+              />
+            );
+          })}
+        </div>
+      );
+    }
+
     return (
-      <div className="flex flex-col gap-0.5">
-         {tags.map(tag => {
+      <div className="flex flex-col gap-1 pr-1 border-r-2 border-slate-100">
+         {relevantTags.map(tag => {
            const ind = INDICATORS_CONFIG[tag];
-           if(!ind) return null;
-           if(ind.isSymbol) return <span key={tag} className={`text-[8px] font-black leading-none ${ind.color}`}>€</span>;
-           return <div key={tag} className={`w-1.5 h-1.5 rounded-full border border-white ${ind.color}`}></div>;
+           return (
+             <div 
+               key={tag} 
+               className={`w-1.5 h-1.5 rounded-full ${ind?.color}`}
+               title={ind?.label}
+             />
+           );
          })}
       </div>
     );
   };
 
   const renderLegend = ({ clickable, activeTags, onToggle }: { clickable: boolean, activeTags?: DietTag[], onToggle?: (t: DietTag) => void }) => (
-    <div className="px-6 py-2 flex flex-wrap gap-2 justify-center text-[9px] text-slate-400">
+    <div className="px-6 py-2.5 flex flex-wrap gap-3 justify-center text-[10px] text-slate-400 bg-white/50 border-b border-slate-100">
        {Object.entries(INDICATORS_CONFIG).map(([key, config]) => {
          const isActive = activeTags?.includes(key as DietTag);
          return (
-           <div key={key} onClick={() => clickable && onToggle && onToggle(key as DietTag)} className={`flex items-center gap-1 transition-all ${clickable ? 'cursor-pointer select-none px-2 py-1 rounded-lg' : ''} ${isActive ? 'bg-slate-200 text-slate-700 font-bold' : ''}`}>
-              {config?.isSymbol ? <span className={`font-bold ${config.color}`}>€</span> : <div className={`w-1.5 h-1.5 rounded-full ${config?.color}`}></div>}
+           <div 
+            key={key} 
+            onClick={() => clickable && onToggle && onToggle(key as DietTag)} 
+            className={`flex items-center gap-1.5 transition-all px-2 py-1 rounded-full ${clickable ? 'cursor-pointer hover:bg-slate-100' : ''} ${isActive ? 'bg-slate-200 text-slate-800 font-bold scale-105' : 'grayscale-[0.5] opacity-70'}`}
+           >
+              <div className={`w-2 h-2 rounded-full ${config?.color} border border-white shadow-sm`}></div>
               {config?.label}
            </div>
          );
@@ -343,17 +360,17 @@ export default function App() {
   // --- Views ---
 
   const renderHome = () => (
-    <div className="flex flex-col gap-4 pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
-      <header className="px-6 pt-4 pb-2 md:pt-4 md:pb-0 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="flex flex-col gap-4 pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full">
+      <header className="px-6 py-4 md:py-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="md:hidden">
           <h1 className="text-xl font-black text-emerald-600 tracking-tight">BuonApp</h1>
         </div>
-        <div className="flex items-center bg-slate-100 p-0.5 rounded-xl md:w-80">
-          <button onClick={() => setHomeFilterMode('frigo')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all duration-300 ${homeFilterMode === 'frigo' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-400'}`}>
-            <Refrigerator size={12} strokeWidth={2.5} /> Solo Frigo
+        <div className="flex items-center bg-slate-200/50 p-1 rounded-2xl md:w-80 shadow-inner">
+          <button onClick={() => setHomeFilterMode('frigo')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${homeFilterMode === 'frigo' ? 'bg-white text-emerald-600 shadow-md' : 'text-slate-500'}`}>
+            <Refrigerator size={14} strokeWidth={2.5} /> Solo Frigo
           </button>
-          <button onClick={() => setHomeFilterMode('spesa')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-bold transition-all duration-300 ${homeFilterMode === 'spesa' ? 'bg-white text-orange-500 shadow-sm' : 'text-slate-400'}`}>
-            <ShoppingBasket size={12} strokeWidth={2.5} /> Idee Spesa
+          <button onClick={() => setHomeFilterMode('spesa')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all duration-300 ${homeFilterMode === 'spesa' ? 'bg-white text-orange-500 shadow-md' : 'text-slate-500'}`}>
+            <ShoppingBasket size={14} strokeWidth={2.5} /> Idee Spesa
           </button>
         </div>
       </header>
@@ -361,64 +378,63 @@ export default function App() {
       <div className="px-4 md:px-0">
         {heroRecipe ? (
           <div className="relative group">
-            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-300 to-teal-400 rounded-[2rem] blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <div className="relative bg-white rounded-[1.8rem] p-5 md:p-12 shadow-xl flex flex-col md:flex-row gap-6 border border-slate-50 items-center overflow-hidden">
+            <div className="absolute -inset-1 bg-gradient-to-r from-emerald-300 to-teal-400 rounded-[2rem] blur opacity-10 group-hover:opacity-20 transition duration-500"></div>
+            <div className="relative bg-white rounded-[2rem] p-6 md:p-10 shadow-2xl flex flex-col md:flex-row gap-6 md:gap-12 border border-slate-50 items-center overflow-hidden">
               
-              {/* Bottone Random in posizione fissa in alto a destra */}
               <button 
                 onClick={() => { const others = filteredRecipes.filter(r => r.id !== heroRecipe.id); if(others.length > 0) setHeroRecipe(others[Math.floor(Math.random() * others.length)]); }}
-                className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-slate-400 hover:text-emerald-500 hover:border-emerald-100 hover:bg-emerald-50 transition-all z-20 shadow-sm"
+                className="absolute top-5 right-5 md:top-8 md:right-8 w-12 h-12 flex items-center justify-center rounded-2xl bg-slate-50 border-2 border-slate-100 text-slate-400 hover:text-emerald-500 hover:border-emerald-100 hover:bg-emerald-50 transition-all z-20 shadow-sm active:scale-90"
                 title="Nuova proposta"
               >
-                <RefreshCw size={18} />
+                <RefreshCw size={20} />
               </button>
 
               <div className="flex-1 space-y-4 w-full">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                     <span className="text-[9px] font-black text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded uppercase tracking-wider">In evidenza</span>
-                     {new Date().getHours() < 15 ? <span className="flex items-center gap-1 text-[9px] font-bold text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded"><Sun size={8}/> Pranzo</span> : <span className="flex items-center gap-1 text-[9px] font-bold text-indigo-500 bg-indigo-50 px-1.5 py-0.5 rounded"><Moon size={8}/> Cena</span>}
+                     <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-lg uppercase tracking-wider">In evidenza</span>
+                     {new Date().getHours() < 15 ? <span className="flex items-center gap-1 text-[10px] font-bold text-amber-500 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-lg"><Sun size={10}/> Pranzo</span> : <span className="flex items-center gap-1 text-[10px] font-bold text-indigo-500 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-lg"><Moon size={10}/> Cena</span>}
                   </div>
-                  <h2 className="text-xl md:text-3xl font-black text-slate-800 leading-tight pr-8">{heroRecipe.name}</h2>
+                  <h2 className="text-2xl md:text-4xl font-black text-slate-800 leading-tight pr-14">{heroRecipe.name}</h2>
                 </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {heroRecipe.tags.map(t => <TagBadge key={t} tag={t} />)}
+                <div className="flex flex-wrap gap-2">
+                  {heroRecipe.tags.slice(0, 4).map(t => <TagBadge key={t} tag={t} />)}
                 </div>
-                <div className="flex items-center gap-4 text-xs text-slate-500 font-medium">
-                  <span className="flex items-center gap-1"><Clock size={14} className="text-blue-400"/> {heroRecipe.prepTime} min</span>
-                  <span className="flex items-center gap-1"><Flame size={14} className="text-orange-400"/> {heroRecipe.nutrition.calories} kcal</span>
+                <div className="flex items-center gap-6 text-sm text-slate-400 font-bold">
+                  <span className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl"><Clock size={16} className="text-blue-400"/> {heroRecipe.prepTime} min</span>
+                  <span className="flex items-center gap-2 bg-slate-50 px-3 py-1.5 rounded-xl"><Flame size={16} className="text-orange-400"/> {heroRecipe.nutrition.calories} kcal</span>
                 </div>
-                <div className="pt-2 flex gap-2 max-w-sm">
-                  <button onClick={() => { setEditingRecipe(heroRecipe); setIsNewRecipe(false); setIsRecipeEditMode(false); }} className="w-full md:w-48 py-3.5 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 shadow-lg shadow-slate-300 transition-all flex justify-center items-center gap-2">
-                    Cucina <ArrowRight size={16} />
+                <div className="pt-2 flex gap-3 max-w-sm">
+                  <button onClick={() => { setEditingRecipe(heroRecipe); setIsNewRecipe(false); setIsRecipeEditMode(false); }} className="w-full md:w-56 py-4 rounded-2xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 shadow-xl shadow-slate-200 transition-all flex justify-center items-center gap-3 active:scale-95">
+                    Cucina <ArrowRight size={18} />
                   </button>
                 </div>
               </div>
-              <div className="hidden md:flex w-64 h-64 bg-slate-50 rounded-[3rem] items-center justify-center border-2 border-dashed border-slate-200">
-                  <ChefHat className="text-slate-200" size={80} strokeWidth={1} />
+              <div className="hidden md:flex w-72 h-72 bg-slate-50 rounded-[3rem] items-center justify-center border-4 border-double border-slate-100">
+                  <ChefHat className="text-slate-200" size={100} strokeWidth={1} />
               </div>
             </div>
           </div>
         ) : (
-          <div className="text-center py-16 opacity-50 flex flex-col items-center">
-            <Search className="text-slate-300 mb-2" size={32}/>
-            <p className="font-bold text-slate-400 text-sm">Nessuna ricetta disponibile.</p>
+          <div className="text-center py-20 opacity-50 flex flex-col items-center">
+            <Search className="text-slate-200 mb-4" size={48}/>
+            <p className="font-bold text-slate-400">Nessuna ricetta disponibile.</p>
           </div>
         )}
       </div>
 
-      <div className="px-6 text-center py-2">
-        <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest cursor-pointer hover:text-emerald-500 transition-colors" onClick={() => setShowRecipeListModal(true)}>
+      <div className="px-6 text-center py-4">
+        <button onClick={() => setShowRecipeListModal(true)} className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] hover:text-emerald-500 transition-all border-b-2 border-transparent hover:border-emerald-500 pb-1">
           Tutte le ricette disponibili ({filteredRecipes.length})
-        </p>
+        </button>
       </div>
 
-      <Modal isOpen={showRecipeListModal} onClose={() => setShowRecipeListModal(false)} title={`Ricette Disponibili (${filteredRecipes.length})`}>
+      <Modal isOpen={showRecipeListModal} onClose={() => setShowRecipeListModal(false)} title={`Ricette (${filteredRecipes.length})`}>
         <div className="space-y-2">
           {filteredRecipes.map(r => (
-            <button key={r.id} onClick={() => { setShowRecipeListModal(false); setEditingRecipe(r); setIsRecipeEditMode(false); }} className="w-full flex justify-between items-center p-4 bg-slate-50 rounded-2xl hover:bg-emerald-50 transition-colors group text-left">
+            <button key={r.id} onClick={() => { setShowRecipeListModal(false); setEditingRecipe(r); setIsRecipeEditMode(false); }} className="w-full flex justify-between items-center p-4 bg-slate-50 rounded-2xl hover:bg-emerald-50 transition-all group text-left border border-transparent hover:border-emerald-100">
               <span className="font-bold text-slate-700 text-sm group-hover:text-emerald-700">{r.name}</span>
-              <span className="text-[10px] font-bold text-slate-400 bg-white px-2 py-1 rounded-md shadow-sm">{r.prepTime}m</span>
+              <span className="text-[10px] font-black text-slate-400 bg-white border border-slate-100 px-2 py-1 rounded-lg shadow-sm">{r.prepTime}m</span>
             </button>
           ))}
         </div>
@@ -431,29 +447,29 @@ export default function App() {
     const categories = (Object.keys(CATEGORY_LABELS) as IngredientCategory[]);
     return (
       <div className="pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full flex flex-col">
-        <header className="px-6 py-4 bg-white shadow-sm flex flex-col gap-3 rounded-b-2xl md:rounded-b-3xl">
+        <header className="px-6 py-4 bg-white/95 backdrop-blur-md sticky top-0 z-20 shadow-sm flex flex-col gap-3 rounded-b-2xl md:rounded-b-3xl">
           <div className="flex justify-between items-center">
-             <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
+             <h2 className="text-xl font-black text-slate-800 flex items-center gap-3">
                <Refrigerator className="text-emerald-500" size={24} strokeWidth={2.5}/> Il mio Frigo
              </h2>
-             <div className="flex gap-1.5">
-               <button onClick={() => { setIsNewIngredient(true); setEditingIngredient({ id: '', name: '', category: 'dispensa', icon: 'Bowl', tags: [] }); }} className="p-2.5 bg-slate-100 text-slate-400 rounded-full hover:text-emerald-600">
-                  <Plus size={18} strokeWidth={2.5} />
+             <div className="flex gap-2">
+               <button onClick={() => { setIsNewIngredient(true); setEditingIngredient({ id: '', name: '', category: 'dispensa', icon: 'Bowl', tags: [] }); }} className="p-3 bg-slate-100 text-slate-500 rounded-full active:bg-emerald-500 active:text-white transition-colors">
+                  <Plus size={20} strokeWidth={2.5} />
                </button>
-               <button onClick={() => setIsEditMode(!isEditMode)} className={`p-2.5 rounded-full transition-all ${isEditMode ? 'bg-slate-800 text-white rotate-12' : 'bg-slate-100 text-slate-400'}`}>
-                 {isEditMode ? <Check size={18} strokeWidth={3} /> : <Pencil size={18} />}
+               <button onClick={() => setIsEditMode(!isEditMode)} className={`p-3 rounded-full transition-all active:scale-90 ${isEditMode ? 'bg-slate-800 text-white shadow-lg rotate-12' : 'bg-slate-100 text-slate-500'}`}>
+                 {isEditMode ? <Check size={20} strokeWidth={3} /> : <Pencil size={20} />}
                </button>
              </div>
           </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input type="text" placeholder="Cerca..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 pl-10 pr-4 py-2.5 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all" />
+          <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={18} />
+            <input type="text" placeholder="Cerca ingrediente..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 pl-11 pr-4 py-3 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-inner border border-transparent" />
           </div>
         </header>
 
         {renderLegend({ clickable: true, activeTags: activeIngredientTags, onToggle: (tag) => { setActiveIngredientTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]) } })}
 
-        <div className="p-4 space-y-8 pt-2 overflow-y-auto no-scrollbar flex-1">
+        <div className="p-4 space-y-8 pt-4 overflow-y-auto no-scrollbar flex-1">
           {categories.map(cat => {
             let items = grouped[cat]?.filter(i => i.name.toLowerCase().includes(searchQuery.toLowerCase())) || [];
             const indicatorKeys = Object.keys(INDICATORS_CONFIG) as DietTag[];
@@ -462,19 +478,19 @@ export default function App() {
             if (items.length === 0) return null;
             return (
               <div key={cat} className="animate-fade-in">
-                <h3 className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-0.5 flex items-center gap-1.5">
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400"></div> {CATEGORY_LABELS[cat]}
                 </h3>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-9 gap-2">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-9 gap-2.5">
                   {items.map(ing => {
                     const isActive = state.inventory.includes(ing.id);
                     return (
-                      <button key={ing.id} onClick={() => handleIngredientClick(ing)} className={`relative flex flex-col items-center justify-center p-1.5 rounded-xl aspect-square transition-all duration-200 border-2 ${isActive && !isEditMode ? 'bg-emerald-500 text-white border-emerald-500 shadow-md scale-105' : 'bg-white text-slate-400 border-slate-100 hover:border-slate-200'} ${isEditMode && 'border-dashed border-emerald-300'}`}>
-                        {!isEditMode && <div className="absolute top-1 left-1 z-10">{renderIndicators(ing.tags)}</div>}
-                        <Icon name={ing.icon} size={24} className="mb-1 shrink-0" />
+                      <button key={ing.id} onClick={() => handleIngredientClick(ing)} className={`relative flex flex-col items-center justify-center p-2 rounded-2xl aspect-square transition-all duration-200 border-2 ${isActive && !isEditMode ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg scale-[1.04]' : 'bg-white text-slate-500 border-slate-100 hover:border-slate-200'} ${isEditMode && 'border-dashed border-emerald-300'}`}>
+                        {!isEditMode && renderIndicators(ing.tags, 'ingredient')}
+                        <Icon name={ing.icon} size={28} className="mb-1.5 shrink-0" />
                         <span className="text-[11px] font-black leading-tight text-center w-full line-clamp-2 px-1">{ing.name}</span>
-                        {isActive && !isEditMode && <div className="absolute top-1 right-1 w-1.5 h-1.5 bg-white rounded-full"></div>}
-                        {isEditMode && <div className="absolute -top-1.5 -right-1.5 bg-white text-slate-400 p-1 rounded-full border border-slate-100 shadow-sm z-10"><Pencil size={10} /></div>}
+                        {isActive && !isEditMode && <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full animate-pulse shadow-sm"></div>}
+                        {isEditMode && <div className="absolute -top-2 -right-2 bg-white text-slate-400 p-1.5 rounded-full border border-slate-100 shadow-md z-10 hover:text-emerald-500"><Pencil size={10} /></div>}
                       </button>
                     )
                   })}
@@ -483,7 +499,7 @@ export default function App() {
             );
           })}
         </div>
-        <Modal isOpen={!!editingIngredient} onClose={() => setEditingIngredient(null)} title={isNewIngredient ? "Nuovo Ingrediente" : "Modifica Ingrediente"}>
+        <Modal isOpen={!!editingIngredient} onClose={() => setEditingIngredient(null)} title={isNewIngredient ? "Nuovo Ingrediente" : "Modifica"}>
           {editingIngredient && <IngredientEditor initialData={editingIngredient} isNew={isNewIngredient} onSave={saveIngredient} onDelete={deleteIngredient} onCancel={() => setEditingIngredient(null)} />}
         </Modal>
       </div>
@@ -499,42 +515,44 @@ export default function App() {
         return true;
     });
     return (
-    <div className="pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
-      <header className="p-5 bg-white shadow-sm flex flex-col gap-4 rounded-b-2xl md:rounded-b-3xl">
+    <div className="pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full flex flex-col">
+      <header className="p-5 bg-white/95 backdrop-blur-md sticky top-0 z-20 shadow-sm flex flex-col gap-4 rounded-b-2xl md:rounded-b-3xl">
         <div className="flex justify-between items-center">
-            <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
+            <h2 className="text-xl font-black text-slate-800 flex items-center gap-3">
                <ChefHat className="text-emerald-500" size={24} strokeWidth={2.5}/> Ricettario ({displayedRecipes.length})
             </h2>
-            <button onClick={() => { setIsNewRecipe(true); setEditingRecipe({ id: '', name: '', category: 'Primi', ingredients: [], optionalIngredients: [], tags: [], prepTime: 15, instructions: '', nutrition: { calories: 0, protein: 0 } }); }} className="p-2.5 bg-slate-100 text-slate-400 rounded-full">
-               <Plus size={18} strokeWidth={2.5} />
+            <button onClick={() => { setIsNewRecipe(true); setEditingRecipe({ id: '', name: '', category: 'Primi', ingredients: [], optionalIngredients: [], tags: [], prepTime: 15, instructions: '', nutrition: { calories: 0, protein: 0 } }); }} className="p-3 bg-slate-100 text-slate-500 rounded-full hover:bg-emerald-500 hover:text-white transition-colors">
+               <Plus size={20} strokeWidth={2.5} />
              </button>
         </div>
-        <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-            <input type="text" placeholder="Cerca..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 pl-10 pr-4 py-2.5 rounded-xl text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white" />
+        <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" size={18} />
+            <input type="text" placeholder="Cerca ricetta..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 pl-11 pr-4 py-3 rounded-2xl text-sm font-medium outline-none focus:ring-2 focus:ring-emerald-500 focus:bg-white transition-all shadow-inner border border-transparent" />
         </div>
-        <div className="flex overflow-x-auto gap-1.5 no-scrollbar pb-1 -mx-5 px-5">
-           <button onClick={() => setActiveRecipeTab('Tutti')} className={`whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all border ${activeRecipeTab === 'Tutti' ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'bg-white border-slate-200 text-slate-500'}`}>Tutti</button>
+        <div className="flex overflow-x-auto gap-2 no-scrollbar pb-1 -mx-5 px-5">
+           <button onClick={() => setActiveRecipeTab('Tutti')} className={`whitespace-nowrap px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${activeRecipeTab === 'Tutti' ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400'}`}>Tutti</button>
            {['Primi', 'Secondi', 'Veg', 'Street'].map(cat => (
-             <button key={cat} onClick={() => setActiveRecipeTab(cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat as RecipeCategory)} className={`whitespace-nowrap px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all border ${activeRecipeTab === (cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat) ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'bg-white border-slate-200 text-slate-500'}`}>{cat}</button>
+             <button key={cat} onClick={() => setActiveRecipeTab(cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat as RecipeCategory)} className={`whitespace-nowrap px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all border-2 ${activeRecipeTab === (cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat) ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400'}`}>{cat}</button>
            ))}
         </div>
       </header>
       {renderLegend({ clickable: true, activeTags: activeRecipeTags, onToggle: (tag) => { setActiveRecipeTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]) } })}
-      <div className="p-4 pt-2 flex-1 overflow-y-auto no-scrollbar">
+      <div className="p-4 pt-4 overflow-y-auto no-scrollbar flex-1">
          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {displayedRecipes.map(r => {
                 const isCookable = r.ingredients.every(id => state.inventory.includes(id));
                 return (
-                  <div key={r.id} onClick={() => handleRecipeClick(r)} className="bg-white p-3.5 rounded-2xl border border-slate-100 flex gap-3 shadow-sm active:scale-95 transition-all relative">
-                    <div className="absolute top-3 right-3">{renderIndicators(r.tags)}</div>
-                    <div className={`w-1.5 h-auto rounded-full ${isCookable ? 'bg-emerald-500' : 'bg-orange-300'}`}></div>
-                    <div className="flex-1 pr-4">
-                       <h3 className="font-bold text-slate-800 text-sm mb-1 leading-tight">{r.name}</h3>
-                       <div className="flex gap-1 mb-2">{r.tags.slice(0, 1).map(t => <TagBadge key={t} tag={t} />)}</div>
-                       <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400">
-                          <span className="flex items-center gap-1 bg-slate-50 px-2 py-1 rounded-md"><Timer size={10} /> {r.prepTime}m</span>
-                          {isCookable ? <span className="text-emerald-600">Pronto</span> : <span className="text-orange-400">-{r.ingredients.filter(id => !state.inventory.includes(id)).length}</span>}
+                  <div key={r.id} onClick={() => handleRecipeClick(r)} className="bg-white p-4 rounded-[1.5rem] border border-slate-100 flex gap-4 shadow-sm hover:shadow-md active:scale-[0.98] transition-all relative overflow-hidden group">
+                    <div className={`w-1.5 h-full absolute left-0 top-0 transition-colors ${isCookable ? 'bg-emerald-500' : 'bg-orange-300'}`}></div>
+                    <div className="flex-1 pl-1 pr-2 space-y-2">
+                       <div className="flex items-center gap-2">
+                          {renderIndicators(r.tags, 'recipe')}
+                          <h3 className="font-bold text-slate-800 text-[15px] leading-tight group-hover:text-emerald-700 transition-colors">{r.name}</h3>
+                       </div>
+                       <div className="flex gap-1.5">{r.tags.slice(0, 1).map(t => <TagBadge key={t} tag={t} />)}</div>
+                       <div className="flex items-center gap-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">
+                          <span className="flex items-center gap-1.5 bg-slate-50 px-2 py-1 rounded-lg border border-slate-100"><Timer size={12} /> {r.prepTime}m</span>
+                          {isCookable ? <span className="text-emerald-600 font-black">Pronto</span> : <span className="text-orange-400 font-black">Mancano {r.ingredients.filter(id => !state.inventory.includes(id)).length}</span>}
                        </div>
                     </div>
                   </div>
@@ -547,71 +565,74 @@ export default function App() {
   };
 
   const renderBatch = () => (
-    <div className="pb-32 flex flex-col max-w-6xl mx-auto w-full md:px-8">
+    <div className="pb-32 flex flex-col max-w-6xl mx-auto w-full md:px-8 h-full">
       <header className="p-5 bg-white shadow-sm flex justify-between items-center mb-4 rounded-b-2xl md:rounded-b-3xl">
-         <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
+         <h2 className="text-xl font-black text-slate-800 flex items-center gap-3">
            <CalendarDays className="text-emerald-500" size={24} strokeWidth={2.5}/> Pianificatore
          </h2>
       </header>
-      {state.mealPlan.length === 0 ? (
-        <div className="px-5 flex flex-col gap-6 max-w-2xl mx-auto w-full">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 space-y-6">
-            <h3 className="text-sm font-bold text-slate-800 flex items-center gap-2"><SlidersHorizontal size={16}/> Opzioni Menu</h3>
-            <div className="flex justify-between items-center text-xs">
-                <span className="font-bold text-slate-700">Strategia</span>
-                <div className="bg-slate-100 p-0.5 rounded-lg flex">
-                  <button onClick={() => setState(p => ({...p, userPreferences: {...p.userPreferences, batchStrategy: 'Eco'}}))} className={`px-3 py-1.5 rounded-md transition-all ${state.userPreferences.batchStrategy === 'Eco' ? 'bg-white shadow-sm text-emerald-600' : 'text-slate-400'}`}>Eco</button>
-                  <button onClick={() => setState(p => ({...p, userPreferences: {...p.userPreferences, batchStrategy: 'Variety'}}))} className={`px-3 py-1.5 rounded-md transition-all ${state.userPreferences.batchStrategy === 'Variety' ? 'bg-white shadow-sm text-purple-600' : 'text-slate-400'}`}>Varietà</button>
+      <div className="flex-1 overflow-y-auto no-scrollbar">
+        {state.mealPlan.length === 0 ? (
+          <div className="px-5 flex flex-col gap-6 max-w-2xl mx-auto w-full pb-10">
+            <div className="bg-white p-7 rounded-3xl shadow-sm border border-slate-100 space-y-7">
+              <h3 className="text-sm font-black text-slate-800 flex items-center gap-3 uppercase tracking-[0.1em] border-b border-slate-50 pb-3"><SlidersHorizontal size={18} className="text-slate-400"/> Configurazione Piano</h3>
+              <div className="flex justify-between items-center text-sm">
+                  <span className="font-bold text-slate-700">Strategia</span>
+                  <div className="bg-slate-100 p-1 rounded-xl flex shadow-inner">
+                    <button onClick={() => setState(p => ({...p, userPreferences: {...p.userPreferences, batchStrategy: 'Eco'}}))} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${state.userPreferences.batchStrategy === 'Eco' ? 'bg-white shadow-md text-emerald-600' : 'text-slate-400'}`}>Eco</button>
+                    <button onClick={() => setState(p => ({...p, userPreferences: {...p.userPreferences, batchStrategy: 'Variety'}}))} className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase transition-all ${state.userPreferences.batchStrategy === 'Variety' ? 'bg-white shadow-md text-purple-600' : 'text-slate-400'}`}>Varietà</button>
+                  </div>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-2.5">
+                   <span className="font-bold text-slate-700 text-sm">Giorni da pianificare</span>
+                   <span className="font-black text-2xl text-emerald-600">{batchDays}</span>
                 </div>
-            </div>
-            <div>
-              <div className="flex justify-between items-center mb-2">
-                 <span className="font-bold text-slate-700 text-xs">Giorni</span>
-                 <span className="font-black text-lg text-slate-800">{batchDays}</span>
+                <input type="range" min="1" max="7" value={batchDays} onChange={(e) => setBatchDays(parseInt(e.target.value))} className="w-full h-2 bg-slate-200 rounded-full appearance-none accent-emerald-500 cursor-pointer" />
               </div>
-              <input type="range" min="1" max="7" value={batchDays} onChange={(e) => setBatchDays(parseInt(e.target.value))} className="w-full h-1.5 bg-slate-200 rounded-full appearance-none accent-emerald-500" />
-            </div>
-            <div className="grid grid-cols-3 gap-1.5">
-                 {['lunch', 'dinner', 'both'].map((m) => (
-                   <button key={m} onClick={() => setBatchMeals(m as any)} className={`py-2 rounded-xl text-[10px] font-bold border-2 transition-all ${batchMeals === m ? 'bg-emerald-50 border-emerald-500 text-emerald-700' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>{m === 'lunch' ? 'Pranzo' : m === 'dinner' ? 'Cena' : 'Entrambi'}</button>
-                 ))}
-            </div>
-            <button onClick={generatePlan} disabled={isGeneratingBatch} className="w-full bg-slate-900 text-white py-3.5 rounded-xl font-bold hover:bg-slate-800 transition-all flex justify-center items-center gap-2 text-sm">
-              {isGeneratingBatch ? <RefreshCw className="animate-spin" size={16}/> : 'Genera Menu'}
-            </button>
-          </div>
-        </div>
-      ) : (
-        <div className="px-5 space-y-4">
-          <div className="flex justify-between items-center px-1">
-             <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Il tuo menu</span>
-             <button onClick={() => setState(p => ({...p, mealPlan: []}))} className="text-[10px] text-red-500 font-bold bg-red-50 px-2.5 py-1.5 rounded-lg">Resetta</button>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-            {state.mealPlan.map((day) => (
-              <div key={day.dayIndex} className="bg-white rounded-2xl p-4 border border-slate-100 flex flex-col relative overflow-hidden">
-                 <div className="flex items-center justify-between mb-3 border-b border-slate-50 pb-1.5">
-                   <h3 className="font-bold text-slate-800 text-sm">Giorno {day.dayIndex}</h3>
-                   <span className="text-[10px] font-black text-slate-100 text-3xl select-none leading-none">{day.dayIndex}</span>
-                 </div>
-                 <div className="space-y-2">
-                    {day.lunch && <div onClick={() => handleRecipeClick(day.lunch!)} className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded-xl cursor-pointer text-xs"><Sun size={14} className="text-amber-500 shrink-0"/><span className="truncate font-bold text-slate-700">{day.lunch.name}</span></div>}
-                    {day.dinner && <div onClick={() => handleRecipeClick(day.dinner!)} className="flex items-center gap-2 p-2 hover:bg-slate-50 rounded-xl cursor-pointer text-xs"><Moon size={14} className="text-indigo-500 shrink-0"/><span className="truncate font-bold text-slate-700">{day.dinner.name}</span></div>}
-                 </div>
+              <div className="grid grid-cols-3 gap-2">
+                   {['lunch', 'dinner', 'both'].map((m) => (
+                     <button key={m} onClick={() => setBatchMeals(m as any)} className={`py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border-2 transition-all ${batchMeals === m ? 'bg-emerald-50 border-emerald-500 text-emerald-700 shadow-md scale-[1.02]' : 'bg-slate-50 border-slate-100 text-slate-400'}`}>{m === 'lunch' ? 'Pranzo' : m === 'dinner' ? 'Cena' : 'Tutti'}</button>
+                   ))}
               </div>
-            ))}
+              <button onClick={generatePlan} disabled={isGeneratingBatch} className="w-full bg-slate-900 text-white py-4.5 rounded-[1.5rem] font-bold hover:bg-slate-800 transition-all flex justify-center items-center gap-3 text-sm active:scale-95 shadow-xl shadow-slate-200 mt-4 h-14">
+                {isGeneratingBatch ? <RefreshCw className="animate-spin" size={20}/> : 'Genera Piano Settimanale'}
+              </button>
+            </div>
           </div>
-          <div className="bg-slate-900 text-slate-300 rounded-3xl p-6 shadow-xl mt-4 relative overflow-hidden">
-             <h3 className="font-bold text-white text-sm mb-4 flex items-center gap-2 border-b border-slate-700 pb-2 relative z-10"><ShoppingBasket className="text-emerald-400" size={18}/> Lista Spesa</h3>
-             <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs relative z-10">
-                {getShoppingList().length === 0 ? <li className="opacity-50 italic py-2">Dispensa completa!</li> : getShoppingList().map(id => {
-                  const ing = state.ingredients.find(i => i.id === id);
-                  return <li key={id} className="flex items-center gap-2 bg-slate-800/40 p-2.5 rounded-xl border border-slate-700/50"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0"></div><span className="truncate">{ing?.name || id}</span></li>;
-                })}
-             </ul>
+        ) : (
+          <div className="px-5 space-y-4 pb-10">
+            <div className="flex justify-between items-center px-1">
+               <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Il tuo menu personalizzato</span>
+               <button onClick={() => setState(p => ({...p, mealPlan: []}))} className="text-[10px] text-red-500 font-bold bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-100 transition-colors">Resetta Tutto</button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+              {state.mealPlan.map((day) => (
+                <div key={day.dayIndex} className="bg-white rounded-2xl p-4 border border-slate-100 flex flex-col relative group hover:border-emerald-200 transition-colors shadow-sm">
+                   <div className="flex items-center justify-between mb-3 border-b border-slate-50 pb-2">
+                     <h3 className="font-black text-slate-800 text-sm">Giorno {day.dayIndex}</h3>
+                     <span className="text-[10px] font-black text-slate-100 text-4xl select-none leading-none absolute top-4 right-4 group-hover:text-emerald-50 transition-colors">{day.dayIndex}</span>
+                   </div>
+                   <div className="space-y-2 relative z-10">
+                      {day.lunch && <div onClick={() => handleRecipeClick(day.lunch!)} className="flex items-center gap-2.5 p-2 hover:bg-emerald-50 rounded-xl cursor-pointer text-xs transition-colors border border-transparent hover:border-emerald-100"><Sun size={14} className="text-amber-500 shrink-0"/><span className="truncate font-bold text-slate-700">{day.lunch.name}</span></div>}
+                      {day.dinner && <div onClick={() => handleRecipeClick(day.dinner!)} className="flex items-center gap-2.5 p-2 hover:bg-indigo-50 rounded-xl cursor-pointer text-xs transition-colors border border-transparent hover:border-indigo-100"><Moon size={14} className="text-indigo-500 shrink-0"/><span className="truncate font-bold text-slate-700">{day.dinner.name}</span></div>}
+                   </div>
+                </div>
+              ))}
+            </div>
+            <div className="bg-slate-900 text-slate-300 rounded-[2rem] p-7 shadow-2xl mt-6 relative overflow-hidden">
+               <div className="absolute -right-8 -bottom-8 text-emerald-500/10"><ShoppingBasket size={150} /></div>
+               <h3 className="font-black text-white text-sm mb-5 flex items-center gap-3 border-b border-slate-700 pb-3 relative z-10 uppercase tracking-[0.2em]"><ShoppingBasket className="text-emerald-400" size={20}/> Lista della Spesa</h3>
+               <ul className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs relative z-10 font-medium">
+                  {getShoppingList().length === 0 ? <li className="opacity-50 italic py-2">Dispensa completa! Non serve comprare nulla.</li> : getShoppingList().map(id => {
+                    const ing = state.ingredients.find(i => i.id === id);
+                    return <li key={id} className="flex items-center gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 hover:bg-slate-800 transition-colors"><div className="w-2 h-2 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div><span className="truncate text-slate-200">{ing?.name || id}</span></li>;
+                  })}
+               </ul>
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 
@@ -624,35 +645,35 @@ export default function App() {
        });
     };
     return (
-      <div className="pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
-        <header className="p-5 bg-white shadow-sm flex justify-between items-center mb-4 rounded-b-2xl">
-           <h2 className="text-xl font-black text-slate-800 flex items-center gap-2">
-             <Settings className="text-slate-400" size={24}/> Parametri
+      <div className="pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8 h-full flex flex-col">
+        <header className="p-5 bg-white shadow-sm flex justify-between items-center mb-4 rounded-b-2xl md:rounded-b-3xl">
+           <h2 className="text-xl font-black text-slate-800 flex items-center gap-3">
+             <Settings className="text-slate-400" size={24}/> Parametri & Dati
            </h2>
         </header>
-        <div className="px-4 space-y-6">
+        <div className="px-4 space-y-6 overflow-y-auto no-scrollbar flex-1 pb-10">
           <section>
-             <div className="bg-white rounded-2xl p-4 md:p-8 shadow-sm border border-slate-100">
-               <h3 className="text-sm font-black text-slate-800 mb-6 flex items-center gap-2 uppercase tracking-widest"><ListChecks size={18} className="text-emerald-500"/> Matrice Dietetica</h3>
+             <div className="bg-white rounded-3xl p-5 md:p-10 shadow-sm border border-slate-100">
+               <h3 className="text-xs font-black text-slate-800 mb-8 flex items-center gap-3 uppercase tracking-[0.2em] border-b border-slate-50 pb-4"><ListChecks size={20} className="text-emerald-500"/> Matrice Dietetica</h3>
                <div className="overflow-x-auto no-scrollbar">
-                <table className="w-full text-xs md:text-sm">
+                <table className="w-full">
                   <thead>
                     <tr className="border-b border-slate-100">
-                      <th className="p-2 text-left text-slate-400 font-black text-[10px]">PREFERENZA</th>
-                      <th className="p-2 text-center w-20"><Sun size={16} className="mx-auto text-amber-500 mb-1"/><span className="text-[9px] uppercase opacity-60">Pranzo</span></th>
-                      <th className="p-2 text-center w-20"><Moon size={16} className="mx-auto text-indigo-500 mb-1"/><span className="text-[9px] uppercase opacity-60">Cena</span></th>
+                      <th className="p-3 text-left text-slate-300 font-black text-[10px] uppercase tracking-widest">Tag Preferenza</th>
+                      <th className="p-3 text-center w-24 md:w-32"><Sun size={20} className="mx-auto text-amber-500 mb-1"/><span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Pranzo</span></th>
+                      <th className="p-3 text-center w-24 md:w-32"><Moon size={20} className="mx-auto text-indigo-500 mb-1"/><span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Cena</span></th>
                     </tr>
                   </thead>
                   <tbody>
                       {Object.entries(TAG_LABELS).map(([tag, conf]) => (
                         <tr key={tag} className="border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
-                          <td className="p-2.5 font-bold text-slate-700">{conf.label}</td>
+                          <td className="p-4 font-bold text-slate-700 text-sm md:text-base">{conf.label}</td>
                           {['lunch', 'dinner'].map((meal) => {
                               const isActive = state.userPreferences.dietMatrix[meal as 'lunch' | 'dinner'].includes(tag as DietTag);
                               return (
-                                <td key={meal} className="p-2 text-center">
-                                  <button onClick={() => toggleMatrix(meal as any, tag as any)} className={`w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all mx-auto ${isActive ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
-                                      {isActive && <Check size={16} strokeWidth={4}/>}
+                                <td key={meal} className="p-4 text-center">
+                                  <button onClick={() => toggleMatrix(meal as any, tag as any)} className={`w-10 h-10 rounded-[0.8rem] border-2 flex items-center justify-center transition-all mx-auto active:scale-90 ${isActive ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
+                                      {isActive && <Check size={20} strokeWidth={4}/>}
                                   </button>
                                 </td>
                               )
@@ -664,16 +685,21 @@ export default function App() {
                </div>
              </div>
           </section>
-          <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between gap-4">
-              <h3 className="text-sm font-black text-slate-800 uppercase tracking-widest"><Save size={16} className="text-blue-500 inline mr-1"/> Backup</h3>
-              <button onClick={() => { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state)); const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", `buonapp_backup.json`); dl.click(); }} className="w-full py-3 bg-slate-50 text-emerald-600 font-bold rounded-xl border border-slate-100 text-xs flex items-center justify-center gap-2">
-                <Download size={16} /> Esporta .json
+          <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="bg-white rounded-3xl p-8 shadow-sm border border-slate-100 flex flex-col justify-between gap-6">
+              <div>
+                <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 flex items-center gap-2"><Save size={14} className="text-blue-500"/> Backup Locale</h3>
+                <p className="text-sm text-slate-500 font-medium">Esporta lo stato corrente dell'app per backup o per migrare su un altro browser.</p>
+              </div>
+              <button onClick={() => { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state)); const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", `buonapp_backup_${new Date().toISOString().split('T')[0]}.json`); dl.click(); }} className="w-full py-4 bg-slate-50 text-emerald-600 font-black rounded-2xl border-2 border-slate-100 text-xs flex items-center justify-center gap-3 hover:bg-emerald-50 hover:border-emerald-100 transition-all active:scale-95 uppercase tracking-widest">
+                <Download size={18} /> Scarica Backup .json
               </button>
             </div>
-            <div className="bg-emerald-900 text-emerald-100 rounded-2xl p-6 shadow-lg border border-emerald-800 text-center flex flex-col justify-center">
-               <p className="text-2xl font-black">BuonApp</p>
-               <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mt-1">v 0.5.4</p>
+            <div className="bg-emerald-900 text-emerald-100 rounded-3xl p-8 shadow-2xl border border-emerald-800 text-center flex flex-col justify-center items-center">
+               <h3 className="text-3xl font-black mb-1">BuonApp</h3>
+               <p className="text-[10px] font-black opacity-40 uppercase tracking-[0.3em]">Cucina Intelligente</p>
+               <div className="h-1 w-12 bg-emerald-500/50 rounded-full my-6"></div>
+               <p className="text-[10px] font-black opacity-30 uppercase tracking-widest">Versione 0.5.7</p>
             </div>
           </section>
         </div>
@@ -687,40 +713,40 @@ export default function App() {
         isRecipeEditMode || isNewRecipe ? (
           <RecipeEditor initialData={editingRecipe} isNew={isNewRecipe} allIngredients={state.ingredients} inventory={state.inventory} onSave={saveRecipe} onDelete={deleteRecipe} onCancel={() => setEditingRecipe(null)} />
         ) : (
-          <div className="space-y-6 animate-fade-in pb-4">
-             <div className="grid grid-cols-3 gap-2">
-               <div className="bg-blue-50 p-3 rounded-2xl flex flex-col items-center justify-center text-blue-600">
-                 <Clock size={18} /><span className="text-lg font-black">{editingRecipe.prepTime}</span><span className="text-[8px] font-bold uppercase opacity-70">Min</span>
+          <div className="space-y-6 animate-fade-in pb-6">
+             <div className="grid grid-cols-3 gap-3">
+               <div className="bg-blue-50 p-4 rounded-2xl flex flex-col items-center justify-center text-blue-600 gap-1 border border-blue-100 shadow-sm">
+                 <Clock size={20} /><span className="text-xl font-black">{editingRecipe.prepTime}</span><span className="text-[8px] font-black uppercase opacity-60 tracking-widest">Minuti</span>
                </div>
-               <div className="bg-orange-50 p-3 rounded-2xl flex flex-col items-center justify-center text-orange-600">
-                 <Flame size={18} /><span className="text-lg font-black">{editingRecipe.nutrition.calories}</span><span className="text-[8px] font-bold uppercase opacity-70">Kcal</span>
+               <div className="bg-orange-50 p-4 rounded-2xl flex flex-col items-center justify-center text-orange-600 gap-1 border border-orange-100 shadow-sm">
+                 <Flame size={20} /><span className="text-xl font-black">{editingRecipe.nutrition.calories}</span><span className="text-[8px] font-black uppercase opacity-60 tracking-widest">Kcal</span>
                </div>
-               <div className="bg-emerald-50 p-3 rounded-2xl flex flex-col items-center justify-center text-emerald-600">
-                 <Dumbbell size={18} /><span className="text-lg font-black">{editingRecipe.nutrition.protein}g</span><span className="text-[8px] font-bold uppercase opacity-70">Prot</span>
+               <div className="bg-emerald-50 p-4 rounded-2xl flex flex-col items-center justify-center text-emerald-600 gap-1 border border-emerald-100 shadow-sm">
+                 <Dumbbell size={20} /><span className="text-xl font-black">{editingRecipe.nutrition.protein}g</span><span className="text-[8px] font-black uppercase opacity-60 tracking-widest">Prot</span>
                </div>
              </div>
-             <div className="flex flex-wrap gap-1.5 justify-center">
+             <div className="flex flex-wrap gap-2 justify-center py-2">
                 <TagBadge tag={editingRecipe.category as any} />
                 {editingRecipe.tags.map(t => <TagBadge key={t} tag={t} />)}
              </div>
              <div>
-               <h3 className="font-bold text-slate-800 mb-2 text-xs uppercase tracking-widest border-b border-slate-50 pb-1">Ingredienti</h3>
+               <h3 className="font-black text-slate-800 mb-3 text-xs uppercase tracking-[0.2em] border-b-2 border-slate-50 pb-2 flex items-center gap-2"><ListChecks size={16} className="text-slate-400"/> Ingredienti</h3>
                <ul className="grid grid-cols-1 gap-2">
                  {editingRecipe.ingredients.map(id => {
                    const ing = state.ingredients.find(i => i.id === id);
                    const inStock = state.inventory.includes(id);
                    return (
-                     <li key={id} className={`flex items-center justify-between p-3 rounded-xl bg-white border shadow-sm ${inStock ? 'border-emerald-200' : 'border-red-50 bg-red-50/10'}`}>
-                       <span className="flex items-center gap-2 font-bold text-slate-700 text-[11px] truncate">{ing && <div className="p-1 bg-slate-50 rounded-lg"><Icon name={ing.icon} size={14} className="text-slate-500"/></div>}<span className="truncate">{ing?.name || id}</span></span>
-                       {inStock ? <Check size={14} className="text-emerald-500" strokeWidth={4} /> : <X size={14} className="text-red-300" strokeWidth={4} />}
+                     <li key={id} className={`flex items-center justify-between p-3.5 rounded-2xl bg-white border shadow-sm transition-all ${inStock ? 'border-emerald-200 ring-2 ring-emerald-50' : 'border-red-50 bg-red-50/5'}`}>
+                       <span className="flex items-center gap-3 font-bold text-slate-700 text-sm truncate">{ing && <div className="p-1.5 bg-slate-50 rounded-xl"><Icon name={ing.icon} size={16} className="text-slate-500"/></div>}<span className="truncate">{ing?.name || id}</span></span>
+                       {inStock ? <Check size={18} className="text-emerald-500" strokeWidth={4} /> : <X size={18} className="text-red-300" strokeWidth={4} />}
                      </li>
                    );
                  })}
                </ul>
              </div>
              <div>
-               <h3 className="font-bold text-slate-800 mb-2 text-xs uppercase tracking-widest border-b border-slate-50 pb-1">Istruzioni</h3>
-               <div className="p-4 bg-slate-50/50 rounded-2xl text-slate-600 text-xs leading-relaxed whitespace-pre-wrap">{editingRecipe.instructions}</div>
+               <h3 className="font-black text-slate-800 mb-3 text-xs uppercase tracking-[0.2em] border-b-2 border-slate-50 pb-2 flex items-center gap-2"><ChefHat size={16} className="text-slate-400"/> Procedimento</h3>
+               <div className="p-5 bg-slate-50/50 rounded-2xl text-slate-600 text-sm leading-relaxed whitespace-pre-wrap border border-slate-100 shadow-inner font-medium">{editingRecipe.instructions}</div>
              </div>
           </div>
         )
@@ -731,11 +757,11 @@ export default function App() {
   const NavItem = ({ id, icon: IconC, label }: { id: ViewMode; icon: any; label: string }) => {
     const isActive = activeTab === id;
     return (
-      <button onClick={() => { setSearchQuery(''); setActiveTab(id); }} className={`group flex flex-col items-center justify-center w-full h-full transition-all duration-300 relative ${isActive ? 'text-emerald-600' : 'text-slate-300'}`}>
-        <div className={`p-2.5 rounded-2xl transition-all duration-300 ${isActive ? 'bg-emerald-50 -translate-y-3 shadow-sm' : 'bg-transparent'}`}>
-          <IconC size={22} strokeWidth={isActive ? 2.5 : 2} />
+      <button onClick={() => { setSearchQuery(''); setActiveTab(id); }} className={`group flex flex-col items-center justify-center w-full h-full transition-all duration-300 relative active:scale-[0.85] ${isActive ? 'text-emerald-600' : 'text-slate-400'}`}>
+        <div className={`p-2 rounded-2xl transition-all duration-300 ${isActive ? 'bg-emerald-50 -translate-y-3 shadow-md' : 'bg-transparent'}`}>
+          <IconC size={28} strokeWidth={isActive ? 2.5 : 2.2} />
         </div>
-        <span className={`text-[9px] font-black tracking-widest mt-0.5 transition-opacity absolute bottom-2 ${isActive ? 'opacity-100' : 'opacity-0'}`}>{label}</span>
+        <span className={`text-[9px] font-black tracking-[0.1em] mt-1 transition-opacity absolute bottom-2 ${isActive ? 'opacity-100' : 'opacity-0'}`}>{label}</span>
       </button>
     );
   };
@@ -743,8 +769,8 @@ export default function App() {
   const DesktopNavItem = ({ id, icon: IconC, label }: { id: ViewMode; icon: any; label: string }) => {
     const isActive = activeTab === id;
     return (
-      <button onClick={() => { setSearchQuery(''); setActiveTab(id); }} className={`w-full flex items-center gap-4 px-6 py-4 rounded-2xl transition-all ${isActive ? 'bg-emerald-50 text-emerald-700 font-bold shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700 font-medium'}`}>
-        <IconC size={22} strokeWidth={isActive ? 2.5 : 2} />
+      <button onClick={() => { setSearchQuery(''); setActiveTab(id); }} className={`w-full flex items-center gap-4 px-6 py-4.5 rounded-2xl transition-all ${isActive ? 'bg-emerald-50 text-emerald-700 font-black shadow-sm' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-700 font-bold'}`}>
+        <IconC size={24} strokeWidth={isActive ? 2.5 : 2} />
         <span>{label}</span>
         {isActive && <ChevronRight size={18} className="ml-auto opacity-40" />}
       </button>
@@ -753,30 +779,30 @@ export default function App() {
 
   return (
     <div className="h-full w-screen bg-slate-50 font-sans text-slate-900 overflow-hidden flex selection:bg-emerald-200">
-      <aside className="hidden md:flex flex-col w-80 bg-white border-r border-slate-200 h-full shadow-sm z-50">
-           <div className="p-10 pb-6">
-               <h1 className="text-3xl font-black text-emerald-600 tracking-tight flex items-center gap-2">
-                 <ChefHat size={32}/> BuonApp
+      <aside className="hidden md:flex flex-col w-80 bg-white border-r border-slate-200 h-full shadow-lg z-50">
+           <div className="p-10 pb-8">
+               <h1 className="text-4xl font-black text-emerald-600 tracking-tighter flex items-center gap-3">
+                 <ChefHat size={38} strokeWidth={2.5}/> BuonApp
                </h1>
-               <p className="text-[11px] text-slate-400 font-bold uppercase tracking-widest mt-1 pl-1">Cucina Intelligente</p>
+               <p className="text-[11px] text-slate-400 font-black uppercase tracking-[0.3em] mt-2 pl-1">Cucina Intelligente</p>
            </div>
-           <nav className="flex-1 px-4 py-6 space-y-2">
-               <DesktopNavItem id="home" icon={Home} label="Home" />
-               <DesktopNavItem id="frigo" icon={Refrigerator} label="Frigo & Dispensa" />
+           <nav className="flex-1 px-4 py-4 space-y-2.5">
+               <DesktopNavItem id="home" icon={Home} label="Dashboard" />
+               <DesktopNavItem id="frigo" icon={Refrigerator} label="Dispensa" />
                <DesktopNavItem id="ricette" icon={ChefHat} label="Ricettario" />
-               <DesktopNavItem id="batch" icon={CalendarDays} label="Pianificatore" />
+               <DesktopNavItem id="batch" icon={CalendarDays} label="Batch Cooking" />
                <DesktopNavItem id="parametri" icon={Settings} label="Parametri" />
            </nav>
            <div className="p-8 border-t border-slate-50">
-              <div className="bg-slate-50 p-5 rounded-3xl border border-slate-100 text-xs font-bold text-slate-500 space-y-2">
-                 <div className="flex justify-between items-center"><span className="opacity-70">Ingredienti</span><span className="text-emerald-600 font-black">{(state.inventory || []).length}/{(state.ingredients || []).length}</span></div>
-                 <div className="flex justify-between items-center"><span className="opacity-70">Ricette</span><span className="text-emerald-600 font-black">{(state.recipes || []).length}</span></div>
+              <div className="bg-slate-50 p-6 rounded-[2rem] border border-slate-100 text-[12px] font-black text-slate-500 space-y-3">
+                 <div className="flex justify-between items-center"><span className="opacity-60 uppercase tracking-widest">Frigo</span><span className="text-emerald-600 text-lg">{(state.inventory || []).length}/{(state.ingredients || []).length}</span></div>
+                 <div className="flex justify-between items-center"><span className="opacity-60 uppercase tracking-widest">Ricette</span><span className="text-emerald-600 text-lg">{(state.recipes || []).length}</span></div>
               </div>
            </div>
       </aside>
 
-      <main className="flex-1 h-full overflow-y-auto relative no-scrollbar">
-        <div className="min-h-full py-0 md:py-12">
+      <main className="flex-1 h-full overflow-hidden relative flex flex-col">
+        <div className="flex-1 overflow-y-auto no-scrollbar pt-0 md:pt-0">
            {activeTab === 'home' && renderHome()}
            {activeTab === 'frigo' && renderInventory()}
            {activeTab === 'ricette' && renderRecipes()}
@@ -789,12 +815,12 @@ export default function App() {
 
       <div className="md:hidden fixed bottom-0 left-0 w-full z-40 safe-bottom pointer-events-none">
         <div className="max-w-md mx-auto pointer-events-auto">
-          <div className="bg-white/95 backdrop-blur-xl border-t border-slate-100 shadow-[0_-10px_40px_rgba(0,0,0,0.06)] h-22 px-4 rounded-t-[2.5rem] flex justify-between items-center pb-2">
+          <div className="bg-white/95 backdrop-blur-xl border-t border-slate-100 shadow-[0_-12px_40px_rgba(0,0,0,0.08)] h-22 px-4 rounded-t-[2.5rem] flex justify-between items-center pb-2">
             <div className="flex-1 h-full"><NavItem id="frigo" icon={Refrigerator} label="FRIGO" /></div>
             <div className="flex-1 h-full"><NavItem id="ricette" icon={ChefHat} label="RICETTE" /></div>
             <div className="w-18 h-full flex items-center justify-center -mt-8">
-              <button onClick={() => setActiveTab('home')} className={`w-14 h-14 rounded-full flex items-center justify-center shadow-lg transition-all duration-300 ${activeTab === 'home' ? 'bg-emerald-500 scale-110 ring-6 ring-slate-50' : 'bg-slate-800'}`}>
-                <Home className="text-white" size={22} strokeWidth={2.5} />
+              <button onClick={() => setActiveTab('home')} className={`w-16 h-16 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 active:scale-90 ${activeTab === 'home' ? 'bg-emerald-500 scale-110 ring-6 ring-slate-50 shadow-emerald-200' : 'bg-slate-800'}`}>
+                <Home className="text-white" size={28} strokeWidth={2.5} />
               </button>
             </div>
             <div className="flex-1 h-full"><NavItem id="batch" icon={CalendarDays} label="BATCH" /></div>
