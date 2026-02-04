@@ -13,35 +13,40 @@ jobs:
       - name: Récupération du code
         uses: actions/checkout@v4
 
-      # 2. On installe Node.js (le moteur pour construire le site)
+      # 2. On installe Node.js
       - name: Installation Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
 
-      # 3. On installe les dépendances du projet
+      # 3. CORRECTION ICI : On utilise 'install' au lieu de 'ci'
+      # Cela permet de générer le fichier manquant automatiquement
       - name: Installation des dépendances
-        run: npm ci
+        run: npm install
 
       # 4. On CONSTRUIT le site (crée le dossier 'dist')
       - name: Construction (Build)
         run: npm run build
 
-      # 5. On envoie SEULEMENT le dossier 'dist' vers Alwaysdata
+      # 5. On envoie vers Alwaysdata
       - name: Envoi via SSH (SCP)
         uses: appleboy/scp-action@master
         with:
           host: ssh-nmfs.alwaysdata.net
+          
+          # MISE A JOUR DE L'UTILISATEUR ICI
           username: nmfs_github
+          
+          # Le mot de passe stocké dans GitHub Secrets
           password: ${{ secrets.SSH_PASSWORD }}
           
           # On prend le contenu du dossier 'dist' créé à l'étape 4
           source: "dist/*"
           
-          # On l'envoie dans ton dossier serveur
+          # Vers ton dossier serveur
           target: "/home/nmfs/www/_nmfs/BuonApp/v05/"
           
-          # IMPORTANT : On retire le préfixe 'dist' pour mettre les fichiers directement dans v05
+          # IMPORTANT : On retire le préfixe 'dist' pour mettre les fichiers à la racine de v05
           strip_components: 1
           
           # On nettoie le dossier distant avant de copier
