@@ -19,7 +19,7 @@ jobs:
           host: ssh-nmfs.alwaysdata.net
           
           # Ton nom d'utilisateur principal
-          username: nmfs
+          username: nmfs_github
           
           # UTILISATION DU MOT DE PASSE (Méthode simplifiée)
           password: ${{ secrets.SSH_PASSWORD }}
@@ -28,7 +28,7 @@ jobs:
           source: "."
           
           # Vers ton dossier spécifique
-          target: "/home/nmfs/www/_nmfs/BuonApp/v05/"
+          target: "www/_nmfs/BuonApp/v05/"
           
           # IMPORTANT : false pour ne pas tout effacer par erreur
           rm: false
