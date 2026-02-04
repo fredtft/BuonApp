@@ -53,7 +53,7 @@ const Modal: React.FC<{
 
   const handleTouchEnd = () => {
     isDragging.current = false;
-    // Se lo swipe supera una certa soglia, chiudiamo l'app scivolando verso il basso
+    // Se lo swipe supera una certa soglia, chiudiamo scivolando verso il basso
     if (translateY > 100) {
       onClose();
     } else {
@@ -76,7 +76,7 @@ const Modal: React.FC<{
         className="bg-white w-full h-[92vh] sm:h-auto sm:max-w-lg sm:max-h-[90vh] rounded-t-[2.5rem] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden"
         style={{ 
           transform: `translateY(${translateY}px)`,
-          transition: isDragging.current ? 'none' : 'transform 0.35s cubic-bezier(0.19, 1, 0.22, 1)'
+          transition: isDragging.current ? 'none' : 'transform 0.4s cubic-bezier(0.19, 1, 0.22, 1)'
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
