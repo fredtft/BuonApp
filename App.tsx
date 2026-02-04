@@ -362,14 +362,24 @@ export default function App() {
         {heroRecipe ? (
           <div className="relative group">
             <div className="absolute -inset-1 bg-gradient-to-r from-emerald-300 to-teal-400 rounded-[2rem] blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
-            <div className="relative bg-white rounded-[1.8rem] p-5 md:p-12 shadow-xl flex flex-col md:flex-row gap-6 border border-slate-50 items-center">
-              <div className="flex-1 space-y-4">
+            <div className="relative bg-white rounded-[1.8rem] p-5 md:p-12 shadow-xl flex flex-col md:flex-row gap-6 border border-slate-50 items-center overflow-hidden">
+              
+              {/* Bottone Random in posizione fissa in alto a destra */}
+              <button 
+                onClick={() => { const others = filteredRecipes.filter(r => r.id !== heroRecipe.id); if(others.length > 0) setHeroRecipe(others[Math.floor(Math.random() * others.length)]); }}
+                className="absolute top-4 right-4 md:top-6 md:right-6 w-10 h-10 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-100 text-slate-400 hover:text-emerald-500 hover:border-emerald-100 hover:bg-emerald-50 transition-all z-20 shadow-sm"
+                title="Nuova proposta"
+              >
+                <RefreshCw size={18} />
+              </button>
+
+              <div className="flex-1 space-y-4 w-full">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                      <span className="text-[9px] font-black text-emerald-600 bg-emerald-100 px-1.5 py-0.5 rounded uppercase tracking-wider">In evidenza</span>
                      {new Date().getHours() < 15 ? <span className="flex items-center gap-1 text-[9px] font-bold text-amber-500 bg-amber-50 px-1.5 py-0.5 rounded"><Sun size={8}/> Pranzo</span> : <span className="flex items-center gap-1 text-[9px] font-bold text-indigo-500 bg-indigo-50 px-1.5 py-0.5 rounded"><Moon size={8}/> Cena</span>}
                   </div>
-                  <h2 className="text-2xl md:text-5xl font-black text-slate-800 leading-tight">{heroRecipe.name}</h2>
+                  <h2 className="text-xl md:text-3xl font-black text-slate-800 leading-tight pr-8">{heroRecipe.name}</h2>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
                   {heroRecipe.tags.map(t => <TagBadge key={t} tag={t} />)}
@@ -379,15 +389,8 @@ export default function App() {
                   <span className="flex items-center gap-1"><Flame size={14} className="text-orange-400"/> {heroRecipe.nutrition.calories} kcal</span>
                 </div>
                 <div className="pt-2 flex gap-2 max-w-sm">
-                  <button onClick={() => { setEditingRecipe(heroRecipe); setIsNewRecipe(false); setIsRecipeEditMode(false); }} className="flex-[3] py-3.5 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 shadow-lg shadow-slate-300 transition-all flex justify-center items-center gap-2">
+                  <button onClick={() => { setEditingRecipe(heroRecipe); setIsNewRecipe(false); setIsRecipeEditMode(false); }} className="w-full md:w-48 py-3.5 rounded-xl bg-slate-900 text-white font-bold text-sm hover:bg-slate-800 shadow-lg shadow-slate-300 transition-all flex justify-center items-center gap-2">
                     Cucina <ArrowRight size={16} />
-                  </button>
-                  <button 
-                    onClick={() => { const others = filteredRecipes.filter(r => r.id !== heroRecipe.id); if(others.length > 0) setHeroRecipe(others[Math.floor(Math.random() * others.length)]); }}
-                    className="flex-1 flex items-center justify-center rounded-xl bg-white border-2 border-slate-100 text-slate-400 hover:text-emerald-500 hover:border-emerald-100 transition-all"
-                    title="Altra idea"
-                  >
-                    <RefreshCw size={18} />
                   </button>
                 </div>
               </div>
@@ -630,26 +633,26 @@ export default function App() {
         <div className="px-4 space-y-6">
           <section>
              <div className="bg-white rounded-2xl p-4 md:p-8 shadow-sm border border-slate-100">
-               <h3 className="text-sm font-black text-slate-800 mb-4 flex items-center gap-2 uppercase tracking-widest"><ListChecks size={18} className="text-emerald-500"/> Matrice Dietetica</h3>
+               <h3 className="text-sm font-black text-slate-800 mb-6 flex items-center gap-2 uppercase tracking-widest"><ListChecks size={18} className="text-emerald-500"/> Matrice Dietetica</h3>
                <div className="overflow-x-auto no-scrollbar">
-                <table className="w-full text-[10px]">
+                <table className="w-full text-xs md:text-sm">
                   <thead>
-                    <tr className="border-b border-slate-50">
-                      <th className="p-2 text-left text-slate-400 font-black">PREFERENZA</th>
-                      <th className="p-2 text-center"><Sun size={14} className="mx-auto text-amber-500"/></th>
-                      <th className="p-2 text-center"><Moon size={14} className="mx-auto text-indigo-500"/></th>
+                    <tr className="border-b border-slate-100">
+                      <th className="p-2 text-left text-slate-400 font-black text-[10px]">PREFERENZA</th>
+                      <th className="p-2 text-center w-20"><Sun size={16} className="mx-auto text-amber-500 mb-1"/><span className="text-[9px] uppercase opacity-60">Pranzo</span></th>
+                      <th className="p-2 text-center w-20"><Moon size={16} className="mx-auto text-indigo-500 mb-1"/><span className="text-[9px] uppercase opacity-60">Cena</span></th>
                     </tr>
                   </thead>
                   <tbody>
                       {Object.entries(TAG_LABELS).map(([tag, conf]) => (
-                        <tr key={tag} className="border-b border-slate-50 last:border-0">
-                          <td className="p-2 font-bold text-slate-700">{conf.label}</td>
+                        <tr key={tag} className="border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
+                          <td className="p-2.5 font-bold text-slate-700">{conf.label}</td>
                           {['lunch', 'dinner'].map((meal) => {
                               const isActive = state.userPreferences.dietMatrix[meal as 'lunch' | 'dinner'].includes(tag as DietTag);
                               return (
                                 <td key={meal} className="p-2 text-center">
-                                  <button onClick={() => toggleMatrix(meal as any, tag as any)} className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all mx-auto ${isActive ? 'bg-emerald-500 border-emerald-500 text-white' : 'bg-white border-slate-100'}`}>
-                                      {isActive && <Check size={14} strokeWidth={4}/>}
+                                  <button onClick={() => toggleMatrix(meal as any, tag as any)} className={`w-8 h-8 rounded-xl border-2 flex items-center justify-center transition-all mx-auto ${isActive ? 'bg-emerald-500 border-emerald-500 text-white shadow-sm' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
+                                      {isActive && <Check size={16} strokeWidth={4}/>}
                                   </button>
                                 </td>
                               )
@@ -668,9 +671,9 @@ export default function App() {
                 <Download size={16} /> Esporta .json
               </button>
             </div>
-            <div className="bg-emerald-900 text-emerald-100 rounded-2xl p-6 shadow-lg border border-emerald-800 text-center">
+            <div className="bg-emerald-900 text-emerald-100 rounded-2xl p-6 shadow-lg border border-emerald-800 text-center flex flex-col justify-center">
                <p className="text-2xl font-black">BuonApp</p>
-               <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mt-1">v 0.5.3</p>
+               <p className="text-[10px] font-black opacity-40 uppercase tracking-widest mt-1">v 0.5.4</p>
             </div>
           </section>
         </div>
