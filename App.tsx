@@ -50,7 +50,7 @@ import {
 } from './constants';
 import { INITIAL_INGREDIENTS, INITIAL_RECIPES } from './database/index';
 
-// Ordine per lo swipe e per il menu
+// Ordine per lo swipe tra Tab
 const TABS: ViewMode[] = ['frigo', 'ricette', 'home', 'batch', 'parametri'];
 
 export default function App() {
@@ -117,7 +117,6 @@ export default function App() {
   const [batchMeals, setBatchMeals] = useState<'lunch' | 'dinner' | 'both'>('both');
   const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
 
-  // Gestione Swipe
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
   const minSwipeDistance = 60;
@@ -217,7 +216,7 @@ export default function App() {
   const deleteIngredient = (id: string) => {
     setState(prev => ({
       ...prev,
-      ingredients: prev.ingredients.filter(i => i.id !== id),
+      ingredients: prev.ingredients.filter(i => i !== id),
       inventory: prev.inventory.filter(i => i !== id)
     }));
     setEditingIngredient(null);
@@ -235,6 +234,7 @@ export default function App() {
       return { ...prev, recipes: newRecipes };
     });
     setEditingRecipe(null);
+    setIsNewRecipe(false);
   };
 
   const deleteRecipe = (id: string) => {
@@ -332,7 +332,7 @@ export default function App() {
   );
 
   const renderHome = () => (
-    <div className="flex flex-col gap-4 pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
+    <div className="flex flex-col gap-4 pb-32 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
       <header className="px-6 pt-6 pb-2 md:pt-10 md:pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <h1 className="md:hidden text-xl font-black text-emerald-600 tracking-tight text-center">BuonApp</h1>
         <div className="flex items-center bg-slate-200/50 p-1 rounded-2xl md:w-80 shadow-inner">
@@ -366,23 +366,13 @@ export default function App() {
         ) : <p className="text-center py-10 opacity-50 font-bold">Nessuna ricetta disponibile.</p>}
       </div>
       <div className="px-6 text-center py-2"><button onClick={() => setShowRecipeListModal(true)} className="text-[9px] font-black text-slate-400 uppercase tracking-widest border-b border-transparent hover:border-slate-300">Vedi tutto ({filteredRecipes.length})</button></div>
-      <Modal isOpen={showRecipeListModal} onClose={() => setShowRecipeListModal(false)} title={`Ricette (${filteredRecipes.length})`}>
-        <div className="space-y-2 pb-10">
-          {filteredRecipes.map(r => (
-            <button key={r.id} onClick={() => { setShowRecipeListModal(false); handleRecipeClick(r); }} className="w-full flex justify-between items-center p-3 bg-slate-50 rounded-2xl hover:bg-emerald-50 text-left transition-all">
-              <span className="font-bold text-slate-700 text-sm">{r.name}</span>
-              <span className="text-[9px] font-black text-slate-400 bg-white border border-slate-100 px-2 py-0.5 rounded-lg">{r.prepTime}m</span>
-            </button>
-          ))}
-        </div>
-      </Modal>
     </div>
   );
 
   const renderInventory = () => {
     const grouped = (state.ingredients || []).reduce((acc, ing) => { if (!acc[ing.category]) acc[ing.category] = []; acc[ing.category].push(ing); return acc; }, {} as Record<IngredientCategory, Ingredient[]>);
     return (
-      <div className="pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
+      <div className="pb-32 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
         <header className="px-5 pt-4 pb-2.5 sticky top-0 bg-white/95 backdrop-blur-md z-20 shadow-sm flex flex-col gap-2 rounded-b-3xl">
           <div className="flex justify-between items-center">
              <h2 className="text-xl font-black text-slate-800 flex items-center gap-2.5"><Refrigerator className="text-emerald-500" size={26}/> Dispensa</h2>
@@ -422,15 +412,12 @@ export default function App() {
             );
           })}
         </div>
-        <Modal isOpen={!!editingIngredient} onClose={() => setEditingIngredient(null)} title={isNewIngredient ? "Nuovo" : "Modifica"}>
-          {editingIngredient && <IngredientEditor initialData={editingIngredient} isNew={isNewIngredient} onSave={saveIngredient} onDelete={deleteIngredient} onCancel={() => setEditingIngredient(null)} />}
-        </Modal>
       </div>
     );
   };
 
   const renderRecipes = () => (
-    <div className="pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
+    <div className="pb-32 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
       <header className="p-5 md:pt-10 md:pb-8 bg-white/95 backdrop-blur-md sticky top-0 z-20 shadow-sm flex flex-col gap-2 rounded-b-3xl">
         <div className="flex justify-between items-center">
             <h2 className="text-xl font-black text-slate-800 flex items-center gap-2.5"><ChefHat className="text-emerald-500" size={26}/> Ricette ({filteredRecipes.length})</h2>
@@ -440,9 +427,9 @@ export default function App() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
             <input type="text" placeholder="Cerca ricetta..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="w-full bg-slate-100 pl-12 pr-4 py-2.5 rounded-2xl text-sm font-medium outline-none focus:bg-white focus:ring-2 focus:ring-emerald-500/20 transition-all" />
         </div>
-        <div className="flex overflow-x-auto gap-1.5 no-scrollbar justify-center">
-           {['Tutti', 'Primi', 'Secondi', 'Veg & Green', 'Street Food'].map(cat => (
-             <button key={cat} onClick={() => setActiveRecipeTab(cat as any)} className={`whitespace-nowrap px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${activeRecipeTab === cat ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' : 'bg-white border-slate-100 text-slate-400'}`}>{cat === 'Veg & Green' ? 'Veg' : cat === 'Street Food' ? 'Street' : cat}</button>
+        <div className="flex overflow-x-auto gap-1 no-scrollbar justify-center">
+           {['Tutti', 'Primi', 'Secondi', 'Veg', 'Street'].map(cat => (
+             <button key={cat} onClick={() => setActiveRecipeTab(cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat as any)} className={`whitespace-nowrap px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${activeRecipeTab === (cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat) ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' : 'bg-white border-slate-100 text-slate-400'}`}>{cat}</button>
            ))}
         </div>
         {renderLegend({ clickable: true, activeTags: activeRecipeTags, onToggle: (tag) => setActiveRecipeTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]) })}
@@ -469,7 +456,7 @@ export default function App() {
   );
 
   const renderBatch = () => (
-    <div className="pb-28 flex flex-col max-w-6xl mx-auto w-full md:px-8">
+    <div className="pb-32 flex flex-col max-w-6xl mx-auto w-full md:px-8">
       <header className="p-5 bg-white shadow-sm flex justify-between items-center mb-2 rounded-b-3xl">
          <h2 className="text-xl font-black text-slate-800 flex items-center gap-2.5"><CalendarDays className="text-emerald-500" size={26}/> Batch Cooking</h2>
       </header>
@@ -523,7 +510,7 @@ export default function App() {
   );
 
   const renderParams = () => (
-    <div className="pb-28 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
+    <div className="pb-32 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
       <header className="p-5 bg-white shadow-sm flex justify-between items-center mb-4 rounded-b-3xl">
          <h2 className="text-xl font-black text-slate-800 flex items-center gap-2.5"><Settings className="text-slate-400" size={26}/> Impostazioni</h2>
       </header>
@@ -556,13 +543,25 @@ export default function App() {
     </div>
   );
 
-  const MobileNavButton = ({ id, icon: IconC, activeColor, label }: { id: ViewMode; icon: any; activeColor: string; label: string }) => {
+  const MobileNavButton = ({ id, icon: IconC, activeColor, label, isBig }: { id: ViewMode; icon: any; activeColor: string; label: string, isBig?: boolean }) => {
     const isActive = activeTab === id;
+    if (isBig) {
+      return (
+        <button 
+          onClick={()=>{setSearchQuery('');setActiveTab(id);}} 
+          className={`relative flex items-center justify-center transition-all active:scale-90 -mt-6 mx-4`}
+        >
+          <div className={`absolute -inset-1 rounded-full blur-lg opacity-40 transition-all ${isActive ? 'bg-emerald-400' : 'bg-transparent'}`} />
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-2 transition-all ${isActive ? 'bg-emerald-500 border-emerald-400 text-white scale-110' : 'bg-white border-slate-100 text-slate-400'}`}>
+            <IconC size={32} strokeWidth={3} />
+          </div>
+        </button>
+      );
+    }
     return (
       <button onClick={()=>{setSearchQuery('');setActiveTab(id);}} className="flex flex-col items-center justify-center h-full flex-1 transition-all active:scale-[0.85] relative">
-        <IconC size={18} strokeWidth={isActive ? 3 : 2} className={`transition-colors duration-300 ${isActive ? activeColor : 'text-slate-400'}`} />
+        <IconC size={20} strokeWidth={isActive ? 3 : 2} className={`transition-colors duration-300 ${isActive ? activeColor : 'text-slate-400'}`} />
         <span className={`text-[7px] font-black uppercase tracking-tighter mt-1 transition-colors duration-300 ${isActive ? activeColor : 'text-slate-400'}`}>{label}</span>
-        {isActive && <div className={`absolute -bottom-1 w-1 h-1 rounded-full ${activeColor.replace('text-', 'bg-')}`} />}
       </button>
     );
   };
@@ -597,6 +596,11 @@ export default function App() {
            {activeTab === 'parametri' && renderParams()}
         </div>
       </main>
+
+      <Modal isOpen={!!editingIngredient} onClose={() => setEditingIngredient(null)} title={isNewIngredient ? "Nuovo" : "Modifica"}>
+          {editingIngredient && <IngredientEditor initialData={editingIngredient} isNew={isNewIngredient} onSave={saveIngredient} onDelete={deleteIngredient} onCancel={() => setEditingIngredient(null)} />}
+      </Modal>
+
       <Modal isOpen={!!editingRecipe} onClose={() => setEditingRecipe(null)} title={isNewRecipe ? "Nuova Ricetta" : editingRecipe?.name || ""} onEdit={!isRecipeEditMode && !isNewRecipe ? () => setIsRecipeEditMode(true) : undefined}>
         {editingRecipe && (isRecipeEditMode || isNewRecipe ? <RecipeEditor initialData={editingRecipe} isNew={isNewRecipe} allIngredients={state.ingredients} inventory={state.inventory} onSave={saveRecipe} onDelete={deleteRecipe} onCancel={() => setEditingRecipe(null)} /> : 
           <div className="space-y-6 animate-fade-in pb-12">
@@ -613,14 +617,11 @@ export default function App() {
       </Modal>
 
       {/* COMPACT FLOATING BOTTOM MENU - CENTERED ISLAND DESIGN */}
-      <div className="md:hidden fixed bottom-6 left-0 right-0 z-50 px-8 pointer-events-none">
-        <div className="max-w-[280px] mx-auto bg-white/80 backdrop-blur-2xl rounded-full border border-white/40 shadow-[0_12px_40px_rgba(0,0,0,0.12)] h-14 flex items-center justify-around px-3 pointer-events-auto ring-1 ring-black/5">
+      <div className="md:hidden fixed bottom-6 left-0 right-0 z-50 px-4 pointer-events-none">
+        <div className="max-w-[340px] mx-auto bg-white/90 backdrop-blur-2xl rounded-full border border-white/40 shadow-[0_12px_40px_rgba(0,0,0,0.12)] h-14 flex items-center justify-between px-1 pointer-events-auto ring-1 ring-black/5 overflow-visible">
           <MobileNavButton id="frigo" icon={Refrigerator} activeColor="text-cyan-500" label="Frigo" />
           <MobileNavButton id="ricette" icon={ChefHat} activeColor="text-orange-500" label="Ricette" />
-          <div className="relative group">
-            <div className={`absolute -inset-2 rounded-full blur-md opacity-20 transition-all ${activeTab === 'home' ? 'bg-emerald-500' : 'bg-transparent'}`} />
-            <MobileNavButton id="home" icon={Home} activeColor="text-emerald-500" label="Home" />
-          </div>
+          <MobileNavButton id="home" icon={Home} activeColor="text-emerald-500" label="Home" isBig={true} />
           <MobileNavButton id="batch" icon={CalendarDays} activeColor="text-purple-500" label="Batch" />
           <MobileNavButton id="parametri" icon={Settings} activeColor="text-slate-800" label="Param" />
         </div>
