@@ -497,11 +497,11 @@ export default function App() {
               </div>
             ))}
           </div>
-          <div className="bg-slate-900 text-slate-300 rounded-[2rem] p-6 shadow-2xl mt-4 relative overflow-hidden">
+          <div className="bg-slate-900 text-slate-300 rounded-[2rem] p-5 shadow-2xl mt-4 relative overflow-hidden">
              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-3xl -z-10" />
-             <h3 className="font-black text-white text-[11px] mb-5 flex items-center gap-2.5 border-b border-slate-700 pb-3 uppercase tracking-widest"><ShoppingBasket className="text-emerald-400" size={18}/> Lista della Spesa</h3>
-             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-[11px] font-medium">
-                {getShoppingList().length === 0 ? <li className="opacity-50 italic py-2">Dispensa completa!</li> : getShoppingList().map(id => <li key={id} className="flex items-center gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700/50 hover:bg-slate-800/60 transition-colors"><div className="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" /><span className="truncate text-slate-200">{state.ingredients.find(i=>i.id===id)?.name || id}</span></li>)}
+             <h3 className="font-black text-white text-[10px] mb-4 flex items-center gap-2.5 border-b border-slate-700 pb-2.5 uppercase tracking-widest"><ShoppingBasket className="text-emerald-400" size={16}/> Lista Spesa</h3>
+             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-[10px] font-medium">
+                {getShoppingList().length === 0 ? <li className="opacity-50 italic py-2">Dispensa completa!</li> : getShoppingList().map(id => <li key={id} className="flex items-center gap-2.5 bg-slate-800/40 p-2 rounded-lg border border-slate-700/50 hover:bg-slate-800/60 transition-colors"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]" /><span className="truncate text-slate-200">{state.ingredients.find(i=>i.id===id)?.name || id}</span></li>)}
              </ul>
           </div>
         </div>
@@ -630,6 +630,27 @@ export default function App() {
 
       <Modal isOpen={!!editingIngredient} onClose={() => setEditingIngredient(null)} title={isNewIngredient ? "Nuovo" : "Modifica"}>
           {editingIngredient && <IngredientEditor initialData={editingIngredient} isNew={isNewIngredient} onSave={saveIngredient} onDelete={deleteIngredient} onCancel={() => setEditingIngredient(null)} />}
+      </Modal>
+
+      <Modal isOpen={showRecipeListModal} onClose={() => setShowRecipeListModal(false)} title={`Tutte le Ricette (${filteredRecipes.length})`}>
+        <div className="grid grid-cols-1 gap-2.5">
+          {filteredRecipes.map(r => {
+              const isCookable = r.ingredients.every(id => state.inventory.includes(id));
+              const missing = r.ingredients.filter(id => !state.inventory.includes(id)).length;
+              return (
+                <div key={r.id} onClick={() => { setShowRecipeListModal(false); handleRecipeClick(r); }} className="bg-white p-3 rounded-xl border border-slate-100 flex gap-3 shadow-sm active:scale-[0.98] transition-all relative overflow-hidden group">
+                  <div className={`w-1 h-full absolute left-0 top-0 transition-colors ${isCookable ? 'bg-emerald-500' : 'bg-orange-300'}`} />
+                  <div className="flex-1 pl-1 space-y-1">
+                     <div className="flex items-center">{renderIndicators(r.tags, 'recipe')}<h3 className="font-bold text-slate-800 text-sm leading-tight truncate group-hover:text-emerald-700">{r.name}</h3></div>
+                     <div className="flex items-center gap-3 text-[9px] font-black text-slate-400 uppercase tracking-wider">
+                        <span className="flex items-center gap-1 bg-slate-50 px-1.5 py-0.5 rounded-md"><Timer size={10} /> {r.prepTime}m</span>
+                        {isCookable ? <span className="text-emerald-600 font-black">Pronto</span> : <span className="text-orange-400 font-black">Mancano {missing}</span>}
+                     </div>
+                  </div>
+                </div>
+              );
+            })}
+        </div>
       </Modal>
 
       <Modal isOpen={!!editingRecipe} onClose={() => setEditingRecipe(null)} title={isNewRecipe ? "Nuova Ricetta" : editingRecipe?.name || ""} onEdit={!isRecipeEditMode && !isNewRecipe ? () => setIsRecipeEditMode(true) : undefined}>

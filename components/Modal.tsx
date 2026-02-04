@@ -44,14 +44,16 @@ const Modal: React.FC<{
     const currentY = e.targetTouches[0].clientY;
     const diff = currentY - touchStartY.current;
     if (diff > 0) {
-      setTranslateY(diff);
+      // Applichiamo un po' di resistenza allo swipe
+      const resistance = diff < 50 ? 1 : 1.1;
+      setTranslateY(diff / resistance);
       if (e.cancelable) e.preventDefault();
     }
   };
 
   const handleTouchEnd = () => {
     isDragging.current = false;
-    // Se lo swipe supera una certa soglia o è veloce, chiudi
+    // Se lo swipe supera una certa soglia, chiudiamo l'app scivolando verso il basso
     if (translateY > 100) {
       onClose();
     } else {
@@ -60,26 +62,27 @@ const Modal: React.FC<{
     touchStartY.current = null;
   };
 
-  // Calcola l'opacità dello sfondo in base al trascinamento
   const backdropOpacity = Math.max(0, 1 - translateY / 400);
 
   return (
     <div 
-      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in"
-      style={{ backgroundColor: `rgba(15, 23, 42, ${0.6 * backdropOpacity})` }}
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in"
+      style={{ 
+        backgroundColor: `rgba(15, 23, 42, ${0.6 * backdropOpacity})`,
+        backdropFilter: `blur(${4 * backdropOpacity}px)`
+      }}
     >
       <div 
         className="bg-white w-full h-[92vh] sm:h-auto sm:max-w-lg sm:max-h-[90vh] rounded-t-[2.5rem] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden"
         style={{ 
           transform: `translateY(${translateY}px)`,
-          transition: isDragging.current ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1)'
+          transition: isDragging.current ? 'none' : 'transform 0.35s cubic-bezier(0.19, 1, 0.22, 1)'
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Handle superiore più visibile */}
-        <div className="sm:hidden w-10 h-1 bg-slate-200 rounded-full mx-auto mt-3 mb-1 shrink-0 active:bg-slate-300 transition-colors" />
+        <div className="sm:hidden w-10 h-1 bg-slate-200 rounded-full mx-auto mt-3 mb-1 shrink-0" />
         
         <div className="p-4 border-b border-slate-50 flex justify-between items-center sticky top-0 bg-white/95 backdrop-blur z-10">
           <h2 className="text-lg font-black text-slate-800 truncate pr-4">{title}</h2>
