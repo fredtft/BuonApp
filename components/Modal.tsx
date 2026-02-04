@@ -32,7 +32,6 @@ const Modal: React.FC<{
   if (!isOpen) return null;
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    // Solo se siamo in cima allo scroll del contenuto
     const scrollContainer = e.currentTarget.querySelector('.modal-scroll-content');
     if (scrollContainer && scrollContainer.scrollTop > 0) return;
 
@@ -46,7 +45,6 @@ const Modal: React.FC<{
     const diff = currentY - touchStartY.current;
     if (diff > 0) {
       setTranslateY(diff);
-      // Preveniamo lo scroll nativo se stiamo chiudendo
       if (e.cancelable) e.preventDefault();
     }
   };
@@ -73,7 +71,6 @@ const Modal: React.FC<{
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Handle visuale per lo swipe */}
         <div className="sm:hidden w-12 h-1.5 bg-slate-200 rounded-full mx-auto mt-4 mb-1 shrink-0" />
         
         <div className="p-5 border-b border-slate-50 flex justify-between items-center sticky top-0 bg-white/95 backdrop-blur z-10">

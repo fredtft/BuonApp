@@ -216,8 +216,9 @@ export default function App() {
   const deleteIngredient = (id: string) => {
     setState(prev => ({
       ...prev,
-      ingredients: prev.ingredients.filter(i => i !== id),
-      inventory: prev.inventory.filter(i => i !== id)
+      // FIX: Comparazione corretta per evitare TS2367
+      ingredients: prev.ingredients.filter(i => i.id !== id),
+      inventory: prev.inventory.filter(iId => iId !== id)
     }));
     setEditingIngredient(null);
   };
@@ -549,10 +550,10 @@ export default function App() {
       return (
         <button 
           onClick={()=>{setSearchQuery('');setActiveTab(id);}} 
-          className={`relative flex items-center justify-center transition-all active:scale-90 -mt-6 mx-4`}
+          className={`relative flex items-center justify-center transition-all active:scale-90 -mt-8 mx-1`}
         >
-          <div className={`absolute -inset-1 rounded-full blur-lg opacity-40 transition-all ${isActive ? 'bg-emerald-400' : 'bg-transparent'}`} />
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-2 transition-all ${isActive ? 'bg-emerald-500 border-emerald-400 text-white scale-110' : 'bg-white border-slate-100 text-slate-400'}`}>
+          <div className={`absolute -inset-1 rounded-full blur-xl opacity-40 transition-all ${isActive ? 'bg-emerald-400' : 'bg-transparent'}`} />
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center shadow-2xl border-4 transition-all ${isActive ? 'bg-emerald-500 border-emerald-300 text-white scale-110' : 'bg-white border-slate-100 text-slate-400'}`}>
             <IconC size={32} strokeWidth={3} />
           </div>
         </button>
@@ -618,12 +619,18 @@ export default function App() {
 
       {/* COMPACT FLOATING BOTTOM MENU - CENTERED ISLAND DESIGN */}
       <div className="md:hidden fixed bottom-6 left-0 right-0 z-50 px-4 pointer-events-none">
-        <div className="max-w-[340px] mx-auto bg-white/90 backdrop-blur-2xl rounded-full border border-white/40 shadow-[0_12px_40px_rgba(0,0,0,0.12)] h-14 flex items-center justify-between px-1 pointer-events-auto ring-1 ring-black/5 overflow-visible">
-          <MobileNavButton id="frigo" icon={Refrigerator} activeColor="text-cyan-500" label="Frigo" />
-          <MobileNavButton id="ricette" icon={ChefHat} activeColor="text-orange-500" label="Ricette" />
+        <div className="max-w-[340px] mx-auto bg-white/95 backdrop-blur-2xl rounded-full border border-white/40 shadow-[0_12px_40px_rgba(0,0,0,0.12)] h-14 flex items-center pointer-events-auto ring-1 ring-black/5 overflow-visible">
+          <div className="flex-1 flex justify-evenly items-center h-full">
+            <MobileNavButton id="frigo" icon={Refrigerator} activeColor="text-cyan-500" label="Frigo" />
+            <MobileNavButton id="ricette" icon={ChefHat} activeColor="text-orange-500" label="Ricette" />
+          </div>
+          
           <MobileNavButton id="home" icon={Home} activeColor="text-emerald-500" label="Home" isBig={true} />
-          <MobileNavButton id="batch" icon={CalendarDays} activeColor="text-purple-500" label="Batch" />
-          <MobileNavButton id="parametri" icon={Settings} activeColor="text-slate-800" label="Param" />
+          
+          <div className="flex-1 flex justify-evenly items-center h-full">
+            <MobileNavButton id="batch" icon={CalendarDays} activeColor="text-purple-500" label="Batch" />
+            <MobileNavButton id="parametri" icon={Settings} activeColor="text-slate-800" label="Param" />
+          </div>
         </div>
       </div>
     </div>
