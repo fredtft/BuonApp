@@ -51,7 +51,8 @@ const Modal: React.FC<{
 
   const handleTouchEnd = () => {
     isDragging.current = false;
-    if (translateY > 120) {
+    // Se lo swipe supera una certa soglia o è veloce, chiudi
+    if (translateY > 100) {
       onClose();
     } else {
       setTranslateY(0);
@@ -59,35 +60,42 @@ const Modal: React.FC<{
     touchStartY.current = null;
   };
 
+  // Calcola l'opacità dello sfondo in base al trascinamento
+  const backdropOpacity = Math.max(0, 1 - translateY / 400);
+
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+    <div 
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in"
+      style={{ backgroundColor: `rgba(15, 23, 42, ${0.6 * backdropOpacity})` }}
+    >
       <div 
-        className="bg-white w-full h-[92vh] sm:h-auto sm:max-w-lg sm:max-h-[90vh] rounded-t-[2.5rem] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden transition-transform duration-200 ease-out"
+        className="bg-white w-full h-[92vh] sm:h-auto sm:max-w-lg sm:max-h-[90vh] rounded-t-[2.5rem] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden"
         style={{ 
           transform: `translateY(${translateY}px)`,
-          transition: isDragging.current ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
+          transition: isDragging.current ? 'none' : 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.1)'
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        <div className="sm:hidden w-12 h-1.5 bg-slate-200 rounded-full mx-auto mt-4 mb-1 shrink-0" />
+        {/* Handle superiore più visibile */}
+        <div className="sm:hidden w-10 h-1 bg-slate-200 rounded-full mx-auto mt-3 mb-1 shrink-0 active:bg-slate-300 transition-colors" />
         
-        <div className="p-5 border-b border-slate-50 flex justify-between items-center sticky top-0 bg-white/95 backdrop-blur z-10">
-          <h2 className="text-xl font-black text-slate-800 truncate pr-4">{title}</h2>
-          <div className="flex items-center gap-2">
+        <div className="p-4 border-b border-slate-50 flex justify-between items-center sticky top-0 bg-white/95 backdrop-blur z-10">
+          <h2 className="text-lg font-black text-slate-800 truncate pr-4">{title}</h2>
+          <div className="flex items-center gap-1.5">
             {onEdit && (
-              <button onClick={onEdit} className="p-2.5 bg-emerald-50 text-emerald-600 rounded-full active:scale-90 transition-transform">
+              <button onClick={onEdit} className="p-2 bg-emerald-50 text-emerald-600 rounded-full active:scale-90 transition-transform">
                 <Pencil size={18} />
               </button>
             )}
-            <button onClick={onClose} className="p-2.5 bg-slate-50 text-slate-400 rounded-full active:scale-90 transition-transform">
-              <X size={22} />
+            <button onClick={onClose} className="p-2 bg-slate-50 text-slate-400 rounded-full active:scale-90 transition-transform">
+              <X size={20} />
             </button>
           </div>
         </div>
         <div className="flex-1 overflow-y-auto custom-scrollbar modal-scroll-content">
-          <div className="p-5 pb-12 sm:pb-5">
+          <div className="p-5 pb-20 sm:pb-5">
             {children}
           </div>
         </div>

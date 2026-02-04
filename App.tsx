@@ -216,7 +216,6 @@ export default function App() {
   const deleteIngredient = (id: string) => {
     setState(prev => ({
       ...prev,
-      // FIX: Comparazione corretta per evitare TS2367
       ingredients: prev.ingredients.filter(i => i.id !== id),
       inventory: prev.inventory.filter(iId => iId !== id)
     }));
@@ -512,34 +511,65 @@ export default function App() {
 
   const renderParams = () => (
     <div className="pb-32 md:pb-12 max-w-6xl mx-auto w-full md:px-8">
-      <header className="p-5 bg-white shadow-sm flex justify-between items-center mb-4 rounded-b-3xl">
-         <h2 className="text-xl font-black text-slate-800 flex items-center gap-2.5"><Settings className="text-slate-400" size={26}/> Impostazioni</h2>
+      <header className="p-4 bg-white shadow-sm flex justify-between items-center mb-2 rounded-b-[2rem]">
+         <h2 className="text-lg font-black text-slate-800 flex items-center gap-2.5"><Settings className="text-slate-400" size={22}/> Impostazioni</h2>
       </header>
-      <div className="px-4 space-y-6 pb-12">
-         <div className="bg-white rounded-[2rem] p-6 border border-slate-100 shadow-sm">
-           <h3 className="text-[11px] font-black mb-6 uppercase tracking-[0.2em] border-b pb-3.5 flex items-center gap-2"><SlidersHorizontal size={14} className="text-emerald-500"/> Matrice Pasti</h3>
+      <div className="px-4 space-y-4 pb-12">
+         {/* MATRICE PASTI PIÙ COMPATTA */}
+         <div className="bg-white rounded-[1.5rem] p-4 border border-slate-100 shadow-sm">
+           <h3 className="text-[10px] font-black mb-3 uppercase tracking-widest border-b border-slate-50 pb-2 flex items-center gap-2"><SlidersHorizontal size={12} className="text-emerald-500"/> Matrice Pasti</h3>
            <div className="overflow-x-auto no-scrollbar">
             <table className="w-full">
-              <thead><tr className="border-b border-slate-50"><th className="py-2 text-left text-slate-300 font-black text-[10px] uppercase">Tag</th><th className="py-2 text-center text-[9px] font-black uppercase text-slate-400">Pranzo</th><th className="py-2 text-center text-[9px] font-black uppercase text-slate-400">Cena</th></tr></thead>
-              <tbody>
+              <thead>
+                <tr className="border-b border-slate-50">
+                  <th className="pb-2 text-left text-slate-300 font-black text-[9px] uppercase">Tag</th>
+                  <th className="pb-2 text-center text-[8px] font-black uppercase text-slate-400">Pranzo</th>
+                  <th className="pb-2 text-center text-[8px] font-black uppercase text-slate-400">Cena</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50">
                 {Object.entries(TAG_LABELS).map(([tag, conf]) => (
-                  <tr key={tag} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/50 transition-colors"><td className="py-4 font-bold text-slate-700 text-xs">{conf.label}</td>{['lunch','dinner'].map(m=>(<td key={m} className="p-1 text-center"><button onClick={()=>{const curr=state.userPreferences.dietMatrix[m as 'lunch'|'dinner'];const upd=curr.includes(tag as DietTag)?curr.filter(t=>t!==tag):[...curr,tag];setState(p=>({...p,userPreferences:{...p.userPreferences,dietMatrix:{...p.userPreferences.dietMatrix,[m]:upd}}}));}} className={`w-9 h-9 rounded-xl border-2 flex items-center justify-center transition-all mx-auto active:scale-[0.85] ${state.userPreferences.dietMatrix[m as 'lunch'|'dinner'].includes(tag as DietTag)?'bg-emerald-500 text-white border-emerald-500 shadow-lg shadow-emerald-100':'bg-white border-slate-100'}`}>{state.userPreferences.dietMatrix[m as 'lunch'|'dinner'].includes(tag as DietTag) && <Check size={16} strokeWidth={4}/>}</button></td>))}</tr>
+                  <tr key={tag} className="hover:bg-slate-50/50 transition-colors">
+                    <td className="py-2.5 font-bold text-slate-600 text-[11px]">{conf.label}</td>
+                    {['lunch','dinner'].map(m=>(
+                      <td key={m} className="p-0.5 text-center">
+                        <button 
+                          onClick={()=>{
+                            const curr=state.userPreferences.dietMatrix[m as 'lunch'|'dinner'];
+                            const upd=curr.includes(tag as DietTag)?curr.filter(t=>t!==tag):[...curr,tag];
+                            setState(p=>({...p,userPreferences:{...p.userPreferences,dietMatrix:{...p.userPreferences.dietMatrix,[m]:upd}}}));
+                          }} 
+                          className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all mx-auto active:scale-90 ${state.userPreferences.dietMatrix[m as 'lunch'|'dinner'].includes(tag as DietTag)?'bg-emerald-500 text-white border-emerald-500 shadow-md shadow-emerald-50':'bg-white border-slate-100'}`}
+                        >
+                          {state.userPreferences.dietMatrix[m as 'lunch'|'dinner'].includes(tag as DietTag) && <Check size={14} strokeWidth={4}/>}
+                        </button>
+                      </td>
+                    ))}
+                  </tr>
                 ))}
               </tbody>
             </table>
            </div>
          </div>
-         <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-slate-100 flex flex-col gap-5">
-            <div className="flex items-center gap-4">
-               <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl"><Download size={22} /></div>
+
+         {/* BACKUP PIÙ COMPATTO */}
+         <div className="bg-white rounded-[1.5rem] p-4 shadow-sm border border-slate-100 flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+               <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl"><Download size={18} /></div>
                <div>
-                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-800">Dati & Backup</h3>
-                  <p className="text-[11px] text-slate-400 font-medium">Esporta la tua configurazione</p>
+                  <h3 className="text-[11px] font-black uppercase tracking-widest text-slate-800">Backup Dati</h3>
+                  <p className="text-[9px] text-slate-400 font-medium leading-tight">Esporta configurazione JSON</p>
                </div>
             </div>
-            <button onClick={()=>{const data="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(state));const dl=document.createElement('a');dl.setAttribute("href",data);dl.setAttribute("download","buonapp_backup.json");dl.click();}} className="w-full py-4 bg-slate-900 text-white font-black rounded-2xl text-[11px] flex items-center justify-center gap-3 uppercase tracking-widest active:scale-[0.98] transition-all h-14 shadow-xl shadow-slate-200">Scarica Backup JSON</button>
+            <button 
+              onClick={()=>{const data="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(state));const dl=document.createElement('a');dl.setAttribute("href",data);dl.setAttribute("download","buonapp_backup.json");dl.click();}} 
+              className="py-2.5 px-4 bg-slate-900 text-white font-black rounded-xl text-[9px] uppercase tracking-widest active:scale-95 transition-all shadow-md"
+            >
+              Export
+            </button>
          </div>
-         <div className="text-center opacity-30 py-4"><p className="text-[9px] font-black uppercase tracking-[0.5em]">BuonApp v0.7.5</p></div>
+
+         <div className="text-center opacity-20 py-2"><p className="text-[8px] font-black uppercase tracking-[0.4em]">BuonApp v0.7.8</p></div>
       </div>
     </div>
   );
