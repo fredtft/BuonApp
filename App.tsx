@@ -308,13 +308,13 @@ export default function App() {
 
     if (type === 'ingredient') {
       return (
-        <div className="absolute top-1 left-1 flex gap-0.5 z-10">
+        <div className="absolute top-1.5 left-1.5 flex gap-1 z-10">
           {relevantTags.map(tag => {
             const ind = INDICATORS_CONFIG[tag];
             return (
               <div 
                 key={tag} 
-                className={`w-2.5 h-2.5 rounded-full border-2 border-white shadow-sm ${ind?.color}`}
+                className={`w-2.5 h-2.5 rounded-full border border-white shadow-sm ${ind?.color}`}
                 title={ind?.label}
               />
             );
@@ -347,9 +347,9 @@ export default function App() {
            <div 
             key={key} 
             onClick={() => clickable && onToggle && onToggle(key as DietTag)} 
-            className={`flex items-center gap-1.5 transition-all px-2 py-1 rounded-full ${clickable ? 'cursor-pointer hover:bg-slate-100' : ''} ${isActive ? 'bg-slate-200 text-slate-800 font-bold scale-105' : 'grayscale-[0.5] opacity-70'}`}
+            className={`flex items-center gap-1.5 transition-all px-2.5 py-1 rounded-full ${clickable ? 'cursor-pointer hover:bg-slate-100' : ''} ${isActive ? 'bg-slate-200 text-slate-800 font-bold scale-105' : 'grayscale-[0.5] opacity-70'}`}
            >
-              <div className={`w-2 h-2 rounded-full ${config?.color} border border-white shadow-sm`}></div>
+              <div className={`w-2.5 h-2.5 rounded-full ${config?.color} border border-white shadow-sm`}></div>
               {config?.label}
            </div>
          );
@@ -395,7 +395,7 @@ export default function App() {
                      <span className="text-[10px] font-black text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-lg uppercase tracking-wider">In evidenza</span>
                      {new Date().getHours() < 15 ? <span className="flex items-center gap-1 text-[10px] font-bold text-amber-500 bg-amber-50 border border-amber-100 px-2 py-0.5 rounded-lg"><Sun size={10}/> Pranzo</span> : <span className="flex items-center gap-1 text-[10px] font-bold text-indigo-500 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded-lg"><Moon size={10}/> Cena</span>}
                   </div>
-                  <h2 className="text-2xl md:text-4xl font-black text-slate-800 leading-tight pr-14">{heroRecipe.name}</h2>
+                  <h2 className="text-2xl md:text-3xl font-black text-slate-800 leading-tight pr-14">{heroRecipe.name}</h2>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {heroRecipe.tags.slice(0, 4).map(t => <TagBadge key={t} tag={t} />)}
@@ -481,15 +481,15 @@ export default function App() {
                 <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4 ml-1 flex items-center gap-2">
                   <div className="w-1.5 h-1.5 rounded-full bg-emerald-400"></div> {CATEGORY_LABELS[cat]}
                 </h3>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-9 gap-2.5">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-9 gap-4">
                   {items.map(ing => {
                     const isActive = state.inventory.includes(ing.id);
                     return (
-                      <button key={ing.id} onClick={() => handleIngredientClick(ing)} className={`relative flex flex-col items-center justify-center p-2 rounded-2xl aspect-square transition-all duration-200 border-2 ${isActive && !isEditMode ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg scale-[1.04]' : 'bg-white text-slate-500 border-slate-100 hover:border-slate-200'} ${isEditMode && 'border-dashed border-emerald-300'}`}>
+                      <button key={ing.id} onClick={() => handleIngredientClick(ing)} className={`relative flex flex-col items-center justify-center p-1 rounded-2xl aspect-square transition-all duration-200 border-2 ${isActive && !isEditMode ? 'bg-emerald-500 text-white border-emerald-500 shadow-lg scale-[1.04]' : 'bg-white text-slate-500 border-slate-100 hover:border-slate-200'} ${isEditMode && 'border-dashed border-emerald-300'}`}>
                         {!isEditMode && renderIndicators(ing.tags, 'ingredient')}
                         <Icon name={ing.icon} size={28} className="mb-1.5 shrink-0" />
                         <span className="text-[11px] font-black leading-tight text-center w-full line-clamp-2 px-1">{ing.name}</span>
-                        {isActive && !isEditMode && <div className="absolute top-1 right-1 w-2 h-2 bg-white rounded-full animate-pulse shadow-sm"></div>}
+                        {isActive && !isEditMode && <div className="absolute top-1.5 right-1.5 w-2 h-2 bg-white rounded-full animate-pulse shadow-sm"></div>}
                         {isEditMode && <div className="absolute -top-2 -right-2 bg-white text-slate-400 p-1.5 rounded-full border border-slate-100 shadow-md z-10 hover:text-emerald-500"><Pencil size={10} /></div>}
                       </button>
                     )
@@ -653,27 +653,27 @@ export default function App() {
         </header>
         <div className="px-4 space-y-6 overflow-y-auto no-scrollbar flex-1 pb-10">
           <section>
-             <div className="bg-white rounded-3xl p-5 md:p-10 shadow-sm border border-slate-100">
-               <h3 className="text-xs font-black text-slate-800 mb-8 flex items-center gap-3 uppercase tracking-[0.2em] border-b border-slate-50 pb-4"><ListChecks size={20} className="text-emerald-500"/> Matrice Dietetica</h3>
+             <div className="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-slate-100">
+               <h3 className="text-xs font-black text-slate-800 mb-6 flex items-center gap-3 uppercase tracking-[0.2em] border-b border-slate-50 pb-3"><ListChecks size={20} className="text-emerald-500"/> Matrice Dietetica</h3>
                <div className="overflow-x-auto no-scrollbar">
                 <table className="w-full">
                   <thead>
                     <tr className="border-b border-slate-100">
-                      <th className="p-3 text-left text-slate-300 font-black text-[10px] uppercase tracking-widest">Tag Preferenza</th>
-                      <th className="p-3 text-center w-24 md:w-32"><Sun size={20} className="mx-auto text-amber-500 mb-1"/><span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Pranzo</span></th>
-                      <th className="p-3 text-center w-24 md:w-32"><Moon size={20} className="mx-auto text-indigo-500 mb-1"/><span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Cena</span></th>
+                      <th className="p-2.5 text-left text-slate-300 font-black text-[10px] uppercase tracking-widest">Tag Preferenza</th>
+                      <th className="p-2.5 text-center w-24 md:w-32"><Sun size={18} className="mx-auto text-amber-500 mb-1"/><span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Pranzo</span></th>
+                      <th className="p-2.5 text-center w-24 md:w-32"><Moon size={18} className="mx-auto text-indigo-500 mb-1"/><span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Cena</span></th>
                     </tr>
                   </thead>
                   <tbody>
                       {Object.entries(TAG_LABELS).map(([tag, conf]) => (
                         <tr key={tag} className="border-b border-slate-50 last:border-0 hover:bg-slate-50 transition-colors">
-                          <td className="p-4 font-bold text-slate-700 text-sm md:text-base">{conf.label}</td>
+                          <td className="p-3 font-bold text-slate-700 text-sm md:text-base">{conf.label}</td>
                           {['lunch', 'dinner'].map((meal) => {
                               const isActive = state.userPreferences.dietMatrix[meal as 'lunch' | 'dinner'].includes(tag as DietTag);
                               return (
-                                <td key={meal} className="p-4 text-center">
-                                  <button onClick={() => toggleMatrix(meal as any, tag as any)} className={`w-10 h-10 rounded-[0.8rem] border-2 flex items-center justify-center transition-all mx-auto active:scale-90 ${isActive ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
-                                      {isActive && <Check size={20} strokeWidth={4}/>}
+                                <td key={meal} className="p-2 text-center">
+                                  <button onClick={() => toggleMatrix(meal as any, tag as any)} className={`w-9 h-9 rounded-xl border-2 flex items-center justify-center transition-all mx-auto active:scale-90 ${isActive ? 'bg-emerald-500 border-emerald-500 text-white shadow-lg' : 'bg-white border-slate-100 hover:border-slate-200'}`}>
+                                      {isActive && <Check size={18} strokeWidth={4}/>}
                                   </button>
                                 </td>
                               )
@@ -758,7 +758,7 @@ export default function App() {
     const isActive = activeTab === id;
     return (
       <button onClick={() => { setSearchQuery(''); setActiveTab(id); }} className={`group flex flex-col items-center justify-center w-full h-full transition-all duration-300 relative active:scale-[0.85] ${isActive ? 'text-emerald-600' : 'text-slate-400'}`}>
-        <div className={`p-2 rounded-2xl transition-all duration-300 ${isActive ? 'bg-emerald-50 -translate-y-3 shadow-md' : 'bg-transparent'}`}>
+        <div className={`px-4 py-2.5 rounded-2xl transition-all duration-300 ${isActive ? 'bg-emerald-50 -translate-y-3 shadow-md' : 'bg-transparent'}`}>
           <IconC size={28} strokeWidth={isActive ? 2.5 : 2.2} />
         </div>
         <span className={`text-[9px] font-black tracking-[0.1em] mt-1 transition-opacity absolute bottom-2 ${isActive ? 'opacity-100' : 'opacity-0'}`}>{label}</span>
@@ -815,7 +815,7 @@ export default function App() {
 
       <div className="md:hidden fixed bottom-0 left-0 w-full z-40 safe-bottom pointer-events-none">
         <div className="max-w-md mx-auto pointer-events-auto">
-          <div className="bg-white/95 backdrop-blur-xl border-t border-slate-100 shadow-[0_-12px_40px_rgba(0,0,0,0.08)] h-22 px-4 rounded-t-[2.5rem] flex justify-between items-center pb-2">
+          <div className="bg-white/80 backdrop-blur-xl border-t border-slate-200 shadow-[0_-12px_40px_rgba(0,0,0,0.08)] h-22 px-4 rounded-t-[2.5rem] flex justify-between items-center pb-2">
             <div className="flex-1 h-full"><NavItem id="frigo" icon={Refrigerator} label="FRIGO" /></div>
             <div className="flex-1 h-full"><NavItem id="ricette" icon={ChefHat} label="RICETTE" /></div>
             <div className="w-18 h-full flex items-center justify-center -mt-8">
