@@ -1,0 +1,34 @@
+name: Deploiement vers Alwaysdata
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Envoi via SSH (SCP)
+        uses: appleboy/scp-action@master
+        with:
+          # Ton hôte SSH Alwaysdata
+          host: ssh-nmfs.alwaysdata.net
+          
+          # Ton nom d'utilisateur principal
+          username: nmfs
+          
+          # UTILISATION DU MOT DE PASSE (Méthode simplifiée)
+          password: ${{ secrets.SSH_PASSWORD }}
+          
+          # On copie tout le contenu du dépôt
+          source: "."
+          
+          # Vers ton dossier spécifique
+          target: "/home/nmfs/www/_nmfs/BuonApp/v05/"
+          
+          # IMPORTANT : false pour ne pas tout effacer par erreur
+          rm: false
