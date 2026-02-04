@@ -57,7 +57,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<ViewMode>('home');
   const [state, setState] = useState<AppState>(() => {
     const saved = localStorage.getItem('buonapp_state');
-    let loadedState: AppState | null = null;
+    let loadedState: any = null;
     
     if (saved) {
       try {
@@ -67,7 +67,7 @@ export default function App() {
       }
     }
     
-    // Default / Migration
+    // Default Preferences
     const defaultPreferences = {
       dietMatrix: { lunch: [], dinner: [] },
       batchStrategy: 'Eco' as const
@@ -83,16 +83,25 @@ export default function App() {
       };
     }
 
-    // Ensure migration for old states
+    // Defensive migration: ensure everything is an array before using it
+    const safeIngredients = Array.isArray(loadedState.ingredients) ? loadedState.ingredients : INITIAL_INGREDIENTS;
+    const ingredients = (safeIngredients.length < INITIAL_INGREDIENTS.length) ? INITIAL_INGREDIENTS : safeIngredients;
+
+    const safeUserPrefs = loadedState.userPreferences || {};
+    const safeDietMatrix = safeUserPrefs.dietMatrix || {};
+
     return {
-      ...loadedState,
-      ingredients: loadedState.ingredients.length < INITIAL_INGREDIENTS.length ? INITIAL_INGREDIENTS : loadedState.ingredients,
+      inventory: Array.isArray(loadedState.inventory) ? loadedState.inventory : [],
+      recipes: Array.isArray(loadedState.recipes) ? loadedState.recipes : INITIAL_RECIPES,
+      ingredients: ingredients,
       userPreferences: {
-        ...defaultPreferences,
-        ...loadedState.userPreferences,
-        dietMatrix: loadedState.userPreferences?.dietMatrix || defaultPreferences.dietMatrix
+        batchStrategy: safeUserPrefs.batchStrategy || 'Eco',
+        dietMatrix: {
+          lunch: Array.isArray(safeDietMatrix.lunch) ? safeDietMatrix.lunch : [],
+          dinner: Array.isArray(safeDietMatrix.dinner) ? safeDietMatrix.dinner : []
+        }
       },
-      mealPlan: loadedState.mealPlan || []
+      mealPlan: Array.isArray(loadedState.mealPlan) ? loadedState.mealPlan : []
     };
   });
 
@@ -506,7 +515,7 @@ export default function App() {
   );
 
   const renderInventory = () => {
-    const grouped = state.ingredients.reduce((acc, ing) => {
+    const grouped = (state.ingredients || []).reduce((acc, ing) => {
       if (!acc[ing.category]) acc[ing.category] = [];
       acc[ing.category].push(ing);
       return acc;
@@ -1216,11 +1225,11 @@ export default function App() {
               <div className="bg-slate-50 p-4 rounded-xl border border-slate-100">
                  <div className="flex justify-between items-center mb-1">
                    <span className="text-xs font-bold text-slate-500">Ingredienti</span>
-                   <span className="text-xs font-black text-emerald-600">{state.inventory.length}</span>
+                   <span className="text-xs font-black text-emerald-600">{(state.inventory || []).length}</span>
                  </div>
                  <div className="flex justify-between items-center">
                    <span className="text-xs font-bold text-slate-500">Ricette</span>
-                   <span className="text-xs font-black text-emerald-600">{state.recipes.length}</span>
+                   <span className="text-xs font-black text-emerald-600">{(state.recipes || []).length}</span>
                  </div>
               </div>
            </div>
