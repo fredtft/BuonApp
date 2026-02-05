@@ -32,8 +32,8 @@ export const BatchTab: React.FC<{
                   Eco (Frigo)
                 </button>
                 <button 
-                  onClick={() => setState(p => ({ ...p, userPreferences: { ...p.userPreferences, batchStrategy: 'Variety' } }))} 
-                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all ${state.userPreferences.batchStrategy === 'Variety' ? 'bg-white text-purple-500 shadow-md' : 'text-slate-500'}`}
+                  onClick={() => setState(p => ({ ...p, userPreferences: { ...p.userPreferences, batchStrategy: 'Varietà' } }))} 
+                  className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all ${state.userPreferences.batchStrategy === 'Varietà' ? 'bg-white text-purple-500 shadow-md' : 'text-slate-500'}`}
                 >
                   Varietà (Spesa)
                 </button>

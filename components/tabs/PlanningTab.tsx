@@ -71,7 +71,8 @@ export const PlanningTab: React.FC<Props> = ({
                   <span className="font-bold text-slate-700">Strategia</span>
                   <div className="bg-slate-100 p-1 rounded-xl flex shadow-inner">
                     <button onClick={() => setState(p=>({...p,userPreferences:{...p.userPreferences,batchStrategy:'Eco'}}))} className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${state.userPreferences.batchStrategy==='Eco'?'bg-white shadow text-emerald-600':'text-slate-400'}`}>Eco</button>
-                    <button onClick={() => setState(p=>({...p,userPreferences:{...p.userPreferences,batchStrategy:'Variety'}}))} className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${state.userPreferences.batchStrategy==='Variety'?'bg-white shadow text-purple-600':'text-slate-400'}`}>Varietà</button>
+                    {/* Fix: use 'Varietà' instead of 'Variety' to match AppState type definition */}
+                    <button onClick={() => setState(p=>({...p,userPreferences:{...p.userPreferences,batchStrategy:'Varietà'}}))} className={`px-4 py-1.5 rounded-lg text-[9px] font-black uppercase transition-all ${state.userPreferences.batchStrategy==='Varietà'?'bg-white shadow text-purple-600':'text-slate-400'}`}>Varietà</button>
                   </div>
                 </div>
                 <div>

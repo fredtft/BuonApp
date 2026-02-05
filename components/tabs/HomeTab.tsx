@@ -70,11 +70,11 @@ export const HomeTab: React.FC<{
 
   const toggleLocalConstraint = (tag: DietTag) => {
     setLocalConstraints(prev => {
-      const current = prev[tag];
-      let next: DietConstraintState = 0;
-      if (current === 0) next = 1;
-      else if (current === 1) next = -1;
-      else next = 0;
+      const current = prev[tag] || 0;
+      let next: DietConstraintState;
+      if (current === 1) next = -1;
+      else if (current === -1) next = 0;
+      else next = 1; // Default/0 -> Obbligatorio
       return { ...prev, [tag]: next };
     });
   };

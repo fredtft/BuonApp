@@ -30,9 +30,12 @@ export const SettingsTab: React.FC<{
   };
 
   const cycleState = (current: DietConstraintState): DietConstraintState => {
-    if (current === 0) return 1; // Autorizzato (Green) -> Obbligatorio (Noir)
-    if (current === 1) return -1; // Obbligatorio (Noir) -> Vietato (Rouge)
-    return 0; // Vietato (Rouge) -> Autorizzato (Green)
+    // 0 (o undefined) -> 1 (Obbligatorio)
+    // 1 -> -1 (Vietato)
+    // -1 -> 0 (Autorizzato/Default)
+    if (current === 1) return -1;
+    if (current === -1) return 0;
+    return 1; 
   };
 
   const StateIcon: React.FC<{ s: DietConstraintState }> = ({ s }) => {
@@ -65,7 +68,7 @@ export const SettingsTab: React.FC<{
                       <td key={m} className="p-1 text-center">
                         <button 
                           onClick={()=>{ 
-                            const curr = state.userPreferences.dietMatrix[m as 'lunch'|'dinner'][tag as DietTag];
+                            const curr = state.userPreferences.dietMatrix[m as 'lunch'|'dinner'][tag as DietTag] || 0;
                             const next = cycleState(curr);
                             setState(p=>({
                               ...p,

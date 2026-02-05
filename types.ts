@@ -49,7 +49,7 @@ export interface AppState {
   favoriteRecipes: string[];
   userPreferences: {
     dietMatrix: DietMatrix;
-    batchStrategy: 'Eco' | 'Variety';
+    batchStrategy: 'Eco' | 'Varietà';
   };
   mealPlan: MealPlanDay[];
 }

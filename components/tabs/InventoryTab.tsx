@@ -17,7 +17,7 @@ export const InventoryTab: React.FC<{
 
   const renderDots = (tags: DietTag[]) => {
     const activeIndicators = tags.filter(t => INDICATORS_CONFIG[t]);
-    // Forniamo sempre un contenitore di larghezza fissa (w-2) per allineare le icone
+    // Restituiamo SEMPRE il div w-2 per mantenere l'allineamento verticale costante
     return (
       <div className="w-2 flex flex-col gap-0.5 shrink-0 items-center justify-center min-h-[14px]">
         {activeIndicators.map(t => (
@@ -29,44 +29,44 @@ export const InventoryTab: React.FC<{
 
   return (
     <div className="pb-32 max-w-6xl mx-auto w-full md:px-8 animate-fade-in">
-      <header className="px-5 pt-4 pb-2.5 sticky top-0 bg-white/95 backdrop-blur-md z-20 shadow-sm flex flex-col gap-3 rounded-b-[2.5rem]">
+      <header className="px-5 py-2 sticky top-0 bg-white/95 backdrop-blur-md z-20 shadow-sm flex flex-col gap-1.5 rounded-b-[2.5rem]">
         <div className="flex justify-between items-center">
-           <h2 className="text-xl font-black text-slate-800 flex items-center gap-2.5"><Refrigerator className="text-emerald-500" size={26}/> Dispensa</h2>
-           <div className="flex gap-2">
-             <button onClick={() => setShowOnlyFavorites(!showOnlyFavorites)} className={`p-3 rounded-full transition-all ${showOnlyFavorites ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-slate-100 text-slate-400'}`}><Heart size={20} fill={showOnlyFavorites ? "currentColor" : "none"} /></button>
-             <button onClick={onNewIngredient} className="p-3 bg-slate-100 text-slate-500 rounded-full active:bg-emerald-500 active:text-white transition-all shadow-sm border border-slate-50"><Plus size={22} /></button>
-             <button onClick={() => setIsEditMode(!isEditMode)} className={`p-3 rounded-full transition-all shadow-sm ${isEditMode ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-400'}`}>{isEditMode ? <Check size={22} strokeWidth={3} /> : <Pencil size={22} />}</button>
+           <h2 className="text-lg font-black text-slate-800 flex items-center gap-2"><Refrigerator className="text-emerald-500" size={20}/> Dispensa</h2>
+           <div className="flex gap-1">
+             <button onClick={() => setShowOnlyFavorites(!showOnlyFavorites)} className={`p-2 rounded-full transition-all ${showOnlyFavorites ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-slate-100 text-slate-400'}`}><Heart size={16} fill={showOnlyFavorites ? "currentColor" : "none"} /></button>
+             <button onClick={onNewIngredient} className="p-2 bg-slate-100 text-slate-500 rounded-full active:bg-emerald-500 active:text-white transition-all shadow-sm border border-slate-50"><Plus size={18} /></button>
+             <button onClick={() => setIsEditMode(!isEditMode)} className={`p-2 rounded-full transition-all shadow-sm ${isEditMode ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-400'}`}>{isEditMode ? <Check size={18} strokeWidth={3} /> : <Pencil size={18} />}</button>
            </div>
         </div>
         
         <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
-          <input type="text" placeholder="Cerca ingrediente..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full bg-slate-100 pl-12 pr-12 py-2.5 rounded-2xl text-sm font-medium outline-none border border-transparent focus:bg-white focus:ring-2 focus:ring-emerald-500/20" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={14} />
+          <input type="text" placeholder="Cerca..." value={searchQuery} onChange={e => setSearchQuery(e.target.value)} className="w-full bg-slate-100 pl-9 pr-9 py-1.5 rounded-xl text-[13px] font-medium outline-none border border-transparent focus:bg-white focus:ring-2 focus:ring-emerald-500/20" />
           {searchQuery && (
-            <button onClick={() => setSearchQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1">
-              <X size={18} strokeWidth={3} />
+            <button onClick={() => setSearchQuery('')} className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1">
+              <X size={14} strokeWidth={3} />
             </button>
           )}
         </div>
 
-        <div className="flex justify-center overflow-x-auto gap-2 no-scrollbar py-1">
+        <div className="flex justify-center overflow-x-auto gap-1.5 no-scrollbar py-0.5">
           {Object.entries(INDICATORS_CONFIG).map(([tag, conf]) => {
             const isActive = activeIngredientTags.includes(tag as DietTag);
             return (
               <button 
                 key={tag}
                 onClick={() => setActiveIngredientTags(prev => isActive ? prev.filter(t => t !== tag) : [...prev, tag as DietTag])}
-                className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all whitespace-nowrap ${isActive ? 'bg-orange-50/80 border-orange-200 text-orange-600 shadow-sm' : 'bg-white border-slate-100 text-slate-400'}`}
+                className={`flex items-center gap-1 px-2 py-0.5 rounded-lg border transition-all whitespace-nowrap ${isActive ? 'bg-orange-50/80 border-orange-200 text-orange-600 shadow-sm' : 'bg-white border-slate-100 text-slate-400'}`}
               >
-                <div className={`w-1.5 h-1.5 rounded-full ${conf?.color}`} />
-                <span className="text-[8px] font-black uppercase tracking-widest">{conf?.label}</span>
+                <div className={`w-1 h-1 rounded-full ${conf?.color}`} />
+                <span className="text-[7px] font-black uppercase tracking-widest">{conf?.label}</span>
               </button>
             );
           })}
         </div>
       </header>
 
-      <div className="p-4 space-y-6">
+      <div className="p-4 space-y-5">
         {(Object.keys(CATEGORY_LABELS) as IngredientCategory[]).map(cat => {
           let items = grouped[cat]?.filter(i => i.name.toLowerCase().includes(searchQuery.toLowerCase())) || [];
           if (showOnlyFavorites) items = items.filter(i => state.favoriteIngredients.includes(i.id));
@@ -86,13 +86,13 @@ export const InventoryTab: React.FC<{
                     <div key={ing.id} className="relative group">
                       <button 
                         onClick={() => onIngredientClick(ing)} 
-                        className={`w-full relative flex flex-row items-center gap-1.5 px-2 py-1.5 rounded-xl border transition-all active:scale-[0.97] overflow-hidden ${active && !isEditMode ? 'bg-emerald-500 text-white border-emerald-500 shadow-md' : 'bg-white text-slate-500 border-slate-100'} ${isEditMode && 'border-dashed border-emerald-400'}`}
+                        className={`w-full relative flex flex-row items-center gap-1 px-1.5 py-1.5 rounded-xl border transition-all active:scale-[0.97] overflow-hidden ${active && !isEditMode ? 'bg-emerald-500 text-white border-emerald-500 shadow-md' : 'bg-white text-slate-500 border-slate-100'} ${isEditMode && 'border-dashed border-emerald-400'}`}
                       >
                         {renderDots(ing.tags)}
                         <div className="shrink-0 ml-0.5">
-                          <Icon name={ing.icon} size={14} className={`${active && !isEditMode ? 'scale-110' : ''}`} />
+                          <Icon name={ing.icon} size={13} className={`${active && !isEditMode ? 'scale-110' : ''}`} />
                         </div>
-                        <span className={`flex-1 text-[9px] font-black leading-tight uppercase text-left truncate pr-4 ml-1 ${active && !isEditMode ? 'text-white' : 'text-slate-700'}`}>{ing.name}</span>
+                        <span className={`flex-1 text-[9px] font-black leading-tight uppercase text-left truncate pr-3 ml-1 ${active && !isEditMode ? 'text-white' : 'text-slate-700'}`}>{ing.name}</span>
                       </button>
                       
                       {!isEditMode && (
