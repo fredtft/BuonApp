@@ -36,8 +36,10 @@ export const PlanningTab: React.FC<Props> = ({
     const REQUIRE_TAGS: DietTag[] = ['isVegetarian', 'isLunchbox'];
     const ALLOW_TAGS: DietTag[] = ['containsLactose', 'isGourmand', 'isExpensive', 'isHighProtein', 'containsGluten', 'isHighCarb'];
 
-    const requirements = REQUIRE_TAGS.filter(t => constraints.includes(t)).map(t => TAG_LABELS[t]?.label.toLowerCase());
-    const exclusions = ALLOW_TAGS.filter(t => !constraints.includes(t)).map(t => TAG_LABELS[t]?.label.toLowerCase());
+    // Fix: Access record properties directly instead of using .includes() which doesn't exist on Record.
+    // Assuming 1 means required and -1 means forbidden as per DietConstraintState definition.
+    const requirements = REQUIRE_TAGS.filter(t => constraints[t] === 1).map(t => TAG_LABELS[t]?.label.toLowerCase());
+    const exclusions = ALLOW_TAGS.filter(t => constraints[t] === -1).map(t => TAG_LABELS[t]?.label.toLowerCase());
 
     if (requirements.length === 0 && exclusions.length === 0) {
       return `${prefix}: nessun vincolo, tutto è permesso.`;
@@ -136,13 +138,26 @@ export const PlanningTab: React.FC<Props> = ({
                       <td key={m} className="p-0.5 text-center">
                         <button 
                           onClick={()=>{
-                            const curr=state.userPreferences.dietMatrix[m as 'lunch'|'dinner'];
-                            const upd=curr.includes(tag as DietTag)?curr.filter(t=>t!==tag):[...curr,tag];
-                            setState(p=>({...p,userPreferences:{...p.userPreferences,dietMatrix:{...p.userPreferences.dietMatrix,[m]:upd}}}));
+                            // Fix: Toggle value in record instead of treating it as an array or trying to spread it as one
+                            const curr = state.userPreferences.dietMatrix[m as 'lunch'|'dinner'];
+                            const next = curr[tag as DietTag] === 1 ? 0 : 1;
+                            setState(p=>({
+                              ...p,
+                              userPreferences: {
+                                ...p.userPreferences,
+                                dietMatrix: {
+                                  ...p.userPreferences.dietMatrix,
+                                  [m]: {
+                                    ...curr,
+                                    [tag]: next
+                                  }
+                                }
+                              }
+                            }));
                           }} 
-                          className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all mx-auto active:scale-90 ${state.userPreferences.dietMatrix[m as 'lunch'|'dinner'].includes(tag as DietTag)?'bg-emerald-500 text-white border-emerald-500 shadow-md':'bg-white border-slate-100'}`}
+                          className={`w-7 h-7 rounded-lg border flex items-center justify-center transition-all mx-auto active:scale-90 ${state.userPreferences.dietMatrix[m as 'lunch'|'dinner'][tag as DietTag] === 1 ? 'bg-emerald-500 text-white border-emerald-500 shadow-md' : 'bg-white border-slate-100'}`}
                         >
-                          {state.userPreferences.dietMatrix[m as 'lunch'|'dinner'].includes(tag as DietTag) && <Check size={14} strokeWidth={4}/>}
+                          {state.userPreferences.dietMatrix[m as 'lunch'|'dinner'][tag as DietTag] === 1 && <Check size={14} strokeWidth={4}/>}
                         </button>
                       </td>
                     ))}
