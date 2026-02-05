@@ -77,7 +77,7 @@ export const InventoryTab: React.FC<{
           if (items.length === 0) return null;
           return (
             <div key={cat} className="animate-fade-in">
-              <h3 className="text-[11px] font-black text-slate-300 uppercase tracking-[0.3em] mb-5 flex items-center gap-3"><div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-lg" /> {CATEGORY_LABELS[cat]}</h3>
+              <h3 className="text-[11px] font-black text-slate-300 uppercase tracking-[0.3em] mb-5 flex items-center gap-3"><div className="w-2.5 h-2.5 rounded-full bg-slate-900 shadow-lg" /> {CATEGORY_LABELS[cat]}</h3>
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
                 {items.sort((a,b)=>a.name.localeCompare(b.name)).map(ing => {
                   const active = state.inventory.includes(ing.id);
