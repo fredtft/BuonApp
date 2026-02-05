@@ -72,7 +72,7 @@ const Modal: React.FC<{
     setTimeout(() => {
       onClose();
       setIsAnimatingOut(false);
-    }, 500); // Durata moderata per un look professionale
+    }, 250); // Accelerato x2 (da 500ms a 250ms)
   };
 
   const backdropOpacity = Math.max(0, 1 - translateY / (window.innerHeight * 0.7));
@@ -90,8 +90,8 @@ const Modal: React.FC<{
         className="bg-white w-full h-[92vh] sm:h-auto sm:max-w-lg sm:max-h-[90vh] rounded-t-[2.5rem] sm:rounded-3xl shadow-2xl flex flex-col overflow-hidden"
         style={{ 
           transform: `translateY(${translateY}px)`,
-          // Curva di accelerazione morbida che continua fino al fondo
-          transition: isDragging.current ? 'none' : 'transform 0.5s cubic-bezier(0.32, 0, 0.67, 0)'
+          // Accelerato x2: durata ridotta a 0.25s
+          transition: isDragging.current ? 'none' : 'transform 0.25s cubic-bezier(0.32, 0, 0.67, 0)'
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
