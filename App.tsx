@@ -62,7 +62,6 @@ export default function App() {
 
     try {
       const loaded = JSON.parse(saved);
-      // Caricamento difensivo: verifica che le strutture chiave siano corrette
       return {
         ...baseState,
         ...loaded,
@@ -70,7 +69,6 @@ export default function App() {
         favoriteIngredients: Array.isArray(loaded.favoriteIngredients) ? loaded.favoriteIngredients : baseState.favoriteIngredients,
         favoriteRecipes: Array.isArray(loaded.favoriteRecipes) ? loaded.favoriteRecipes : baseState.favoriteRecipes,
         mealPlan: Array.isArray(loaded.mealPlan) ? loaded.mealPlan : baseState.mealPlan,
-        // Mantieni i dati iniziali se quelli caricati non sono validi o sono vuoti in modo anomalo
         ingredients: (Array.isArray(loaded.ingredients) && loaded.ingredients.length > 0) ? loaded.ingredients : INITIAL_INGREDIENTS,
         recipes: (Array.isArray(loaded.recipes) && loaded.recipes.length > 0) ? loaded.recipes : INITIAL_RECIPES,
         userPreferences: {
@@ -129,27 +127,59 @@ export default function App() {
     setIsGeneratingBatch(true);
     setTimeout(() => {
       const plan: MealPlanDay[] = [];
-      const historyIds = new Set<string>();
-      const getScore = (recipe: Recipe, mealType: 'lunch' | 'dinner') => {
+      const usedIds = new Set<string>();
+
+      const getCandidatePool = (mealType: 'lunch' | 'dinner') => {
         const constraints = state.userPreferences.dietMatrix[mealType];
-        if (!validateRecipeByMatrix(recipe, constraints)) return -2000;
-        let score = 100;
-        const owned = recipe.ingredients.filter(id => state.inventory.includes(id)).length;
-        score += (owned / (recipe.ingredients.length || 1)) * 100;
-        if (state.favoriteRecipes.includes(recipe.id)) score += 50;
-        if (historyIds.has(recipe.id)) score -= 300; 
-        return score + Math.random() * 50;
+        // 1. Filtra per Matrice Pasti
+        let pool = state.recipes.filter(r => validateRecipeByMatrix(r, constraints));
+        
+        // 2. Se Eco, tieni solo ricette fattibili con frigo attuale
+        if (state.userPreferences.batchStrategy === 'Eco') {
+          const cookable = pool.filter(r => r.ingredients.every(id => state.inventory.includes(id)));
+          if (cookable.length > 0) pool = cookable;
+        }
+        return pool;
       };
+
       for (let d = 1; d <= batchDays; d++) {
-        let lunch: Recipe | null = null, dinner: Recipe | null = null;
-        if (batchMeals !== 'dinner') {
-           const cand = state.recipes.map(r => ({ r, score: getScore(r, 'lunch') })).filter(x => x.score > -1000).sort((a,b) => b.score - a.score);
-           if (cand.length > 0) { lunch = cand[0].r; historyIds.add(lunch.id); }
+        let lunch: Recipe | null = null;
+        let dinner: Recipe | null = null;
+
+        // Scelta PRANZO
+        if (batchMeals === 'lunch' || batchMeals === 'both') {
+          const pool = getCandidatePool('lunch');
+          const scored = pool.map(r => {
+            let score = Math.random() * 50;
+            if (state.favoriteRecipes.includes(r.id)) score += 100;
+            if (usedIds.has(r.id)) score -= 1000; // Evita duplicati
+            return { r, score };
+          }).sort((a, b) => b.score - a.score);
+
+          if (scored.length > 0) {
+            lunch = scored[0].r;
+            usedIds.add(lunch.id);
+          }
         }
-        if (batchMeals !== 'lunch') {
-           const cand = state.recipes.map(r => ({ r, score: getScore(r, 'dinner') })).filter(x => x.score > -1000 && x.r.id !== lunch?.id).sort((a,b) => b.score - a.score);
-           if (cand.length > 0) { dinner = cand[0].r; historyIds.add(dinner.id); }
+
+        // Scelta CENA
+        if (batchMeals === 'dinner' || batchMeals === 'both') {
+          const pool = getCandidatePool('dinner');
+          const scored = pool
+            .filter(r => r.id !== lunch?.id) // No stesso piatto lo stesso giorno
+            .map(r => {
+              let score = Math.random() * 50;
+              if (state.favoriteRecipes.includes(r.id)) score += 100;
+              if (usedIds.has(r.id)) score -= 1000;
+              return { r, score };
+            }).sort((a, b) => b.score - a.score);
+
+          if (scored.length > 0) {
+            dinner = scored[0].r;
+            usedIds.add(dinner.id);
+          }
         }
+
         plan.push({ dayIndex: d, lunch, dinner });
       }
       setState(prev => ({ ...prev, mealPlan: plan }));
@@ -180,7 +210,6 @@ export default function App() {
 
   return (
     <div className="h-full w-screen bg-slate-50 font-sans text-slate-900 overflow-hidden flex flex-col lg:flex-row">
-      {/* Sidebar Desktop */}
       <aside className="hidden lg:flex flex-col w-72 bg-white border-r h-full shadow-2xl z-50">
         <div className="p-8 pb-4">
           <div className="flex items-center gap-3 mb-8">
@@ -211,7 +240,6 @@ export default function App() {
         </div>
       </main>
 
-      {/* Modali */}
       <Modal isOpen={!!editingIngredient} onClose={() => setEditingIngredient(null)} title={isNewIngredient ? "Nuovo Ingrediente" : "Modifica"}>
           {editingIngredient && <IngredientEditor initialData={editingIngredient} isNew={isNewIngredient} onSave={ing => { setState(prev => { let ings = [...prev.ingredients]; if (isNewIngredient) { ing.id = ing.name.toLowerCase().replace(/\s/g,'_') + '_' + Date.now(); ings.push(ing); } else ings = ings.map(i => i.id === ing.id ? ing : i); return { ...prev, ingredients: ings }; }); setEditingIngredient(null); }} onDelete={id => { setState(p=>({...p, ingredients: p.ingredients.filter(i=>i.id!==id), inventory: p.inventory.filter(i=>i!==id)})); setEditingIngredient(null); }} onCancel={() => setEditingIngredient(null)} />}
       </Modal>
@@ -264,7 +292,6 @@ export default function App() {
         ))}
       </Modal>
 
-      {/* Navigazione Mobile */}
       {!isAnyModalOpen && (
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[60] safe-p-bottom bg-white/95 backdrop-blur-xl border-t border-slate-100 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] h-20 flex items-center px-4">
             <MobileNavButton id="frigo" icon={Refrigerator} activeColor="text-emerald-500" label="Dispensa" />

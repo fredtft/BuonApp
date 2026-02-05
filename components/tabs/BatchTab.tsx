@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { CalendarDays, Zap, RefreshCw, Sun, Moon, ShoppingBasket } from 'lucide-react';
+import { CalendarDays, Zap, RefreshCw, Sun, Moon, ShoppingBasket, AlertCircle } from 'lucide-react';
 import { AppState, Recipe } from '../../types';
 
 export const BatchTab: React.FC<{ 
@@ -11,6 +11,16 @@ export const BatchTab: React.FC<{
     state.mealPlan.forEach(day => { [day.lunch, day.dinner].forEach(r => r?.ingredients.forEach(id => { if(!state.inventory.includes(id)) need.add(id); })); });
     return Array.from(need);
   };
+
+  const NoRecipePlaceholder = ({ meal }: { meal: 'lunch' | 'dinner' }) => (
+    <div className="flex items-center gap-2 p-1.5 bg-slate-50 border border-dashed border-slate-200 rounded-lg opacity-60">
+      {meal === 'lunch' ? <Sun size={12} className="text-slate-400 shrink-0"/> : <Moon size={12} className="text-slate-400 shrink-0"/>}
+      <div className="flex flex-col">
+        <span className="text-[8px] font-black uppercase text-slate-400 leading-none">Nessun piatto trovato</span>
+        <span className="text-[7px] font-bold uppercase text-slate-300 tracking-tighter">Filtri troppo restrittivi</span>
+      </div>
+    </div>
+  );
 
   return (
     <div className="flex flex-col max-w-6xl mx-auto w-full md:px-8 h-full animate-fade-in">
@@ -78,47 +88,61 @@ export const BatchTab: React.FC<{
             </button>
           </div>
         ) : (
-          <div className="space-y-5">
+          <div className="space-y-4">
             <div className="flex justify-between items-center px-1">
-              <span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Menu Settimanale</span>
-              <button onClick={()=>setState(p=>({...p,mealPlan:[]}))} className="text-[10px] text-red-500 font-bold bg-red-50 px-3 py-1.5 rounded-xl hover:bg-red-100 active:scale-95 transition-all">Resetta</button>
+              <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">Menu Settimanale</span>
+              <button onClick={()=>setState(p=>({...p,mealPlan:[]}))} className="text-[9px] text-red-500 font-black uppercase bg-red-50 px-3 py-1.5 rounded-lg hover:bg-red-100 active:scale-95 transition-all tracking-wider">Resetta</button>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
               {state.mealPlan.map(day=>(
-                <div key={day.dayIndex} className="bg-white rounded-2xl p-4 border border-slate-100 shadow-sm hover:border-purple-200 transition-colors">
-                   <h3 className="font-black text-slate-800 text-sm mb-3 border-b border-slate-50 pb-2 flex justify-between">
-                     <span>Giorno {day.dayIndex}</span>
+                <div key={day.dayIndex} className="bg-white rounded-xl p-3 border border-slate-100 shadow-sm hover:border-purple-200 transition-colors">
+                   <h3 className="font-black text-slate-400 text-[9px] uppercase tracking-widest mb-2 border-b border-slate-50 pb-1.5">
+                     Giorno {day.dayIndex}
                    </h3>
-                   <div className="space-y-2 text-[11px] font-bold">
-                      {day.lunch && (
-                        <div onClick={()=>onRecipeClick(day.lunch!)} className="flex items-center gap-3 p-2 hover:bg-emerald-50 rounded-xl transition-colors cursor-pointer group">
-                          <Sun size={14} className="text-amber-500 group-hover:scale-110 transition-transform"/>
-                          <span className="truncate group-hover:text-emerald-700 font-bold">{day.lunch.name}</span>
-                        </div>
+                   <div className="space-y-1.5 text-[11px] font-bold">
+                      {(batchMeals === 'lunch' || batchMeals === 'both') && (
+                        day.lunch ? (
+                          <div onClick={() => onRecipeClick(day.lunch!)} className="flex items-center gap-2 p-1.5 hover:bg-emerald-50 rounded-lg transition-colors cursor-pointer group">
+                            <Sun size={12} className="text-amber-500 shrink-0"/>
+                            <span className="truncate group-hover:text-emerald-700 font-black text-[10px] leading-tight uppercase tracking-tight">{day.lunch.name}</span>
+                          </div>
+                        ) : <NoRecipePlaceholder meal="lunch" />
                       )}
-                      {day.dinner && (
-                        <div onClick={()=>onRecipeClick(day.dinner!)} className="flex items-center gap-3 p-2 hover:bg-indigo-50 rounded-xl transition-colors cursor-pointer group">
-                          <Moon size={14} className="text-indigo-500 group-hover:scale-110 transition-transform"/>
-                          <span className="truncate group-hover:text-indigo-700 font-bold">{day.dinner.name}</span>
-                        </div>
+                      {(batchMeals === 'dinner' || batchMeals === 'both') && (
+                        day.dinner ? (
+                          <div onClick={() => onRecipeClick(day.dinner!)} className="flex items-center gap-2 p-1.5 hover:bg-indigo-50 rounded-lg transition-colors cursor-pointer group">
+                            <Moon size={12} className="text-indigo-500 shrink-0"/>
+                            <span className="truncate group-hover:text-indigo-700 font-black text-[10px] leading-tight uppercase tracking-tight">{day.dinner.name}</span>
+                          </div>
+                        ) : <NoRecipePlaceholder meal="dinner" />
                       )}
                    </div>
                 </div>
               ))}
             </div>
-            <div className="bg-slate-900 text-slate-300 rounded-[1.5rem] p-4 shadow-2xl relative overflow-hidden">
-               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none"></div>
+            
+            {state.mealPlan.some(d => (batchMeals === 'lunch' && !d.lunch) || (batchMeals === 'dinner' && !d.dinner) || (batchMeals === 'both' && (!d.lunch || !d.dinner))) && (
+              <div className="bg-amber-50 border border-amber-100 p-3 rounded-xl flex items-start gap-3 animate-fade-in">
+                <AlertCircle size={16} className="text-amber-500 shrink-0 mt-0.5" />
+                <p className="text-[10px] font-bold text-amber-700 leading-tight uppercase tracking-tight">
+                  Alcuni pasti non sono stati pianificati. Prova a disattivare dei filtri nella <span className="underline decoration-amber-300">Matrice Pasti</span> o ad aggiungere più ricette.
+                </p>
+              </div>
+            )}
+
+            <div className="bg-slate-900 text-slate-300 rounded-2xl p-4 shadow-xl relative overflow-hidden">
+               <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/5 rounded-full -mr-12 -mt-12 blur-2xl pointer-events-none"></div>
                <h3 className="font-black text-white text-[9px] mb-3 flex items-center gap-2 uppercase tracking-widest border-b border-slate-800 pb-2.5">
                  <ShoppingBasket className="text-emerald-400" size={14}/> Lista Spesa
                </h3>
                <ul className="grid grid-cols-2 gap-1.5 text-[9px] font-medium">
                   {getShoppingList().length === 0 ? (
-                    <li className="opacity-50 italic col-span-2 py-2 text-center">Dispensa completa!</li>
+                    <li className="opacity-50 italic col-span-2 py-2 text-center text-[10px]">Dispensa completa!</li>
                   ) : (
                     getShoppingList().map(id => (
                       <li key={id} className="flex items-center gap-2 bg-slate-800/40 px-2 py-1.5 rounded-lg border border-slate-700/50">
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-                        <span className="truncate text-slate-200">{state.ingredients.find(i=>i.id===id)?.name || id}</span>
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" />
+                        <span className="truncate text-slate-200 uppercase tracking-tighter text-[9px]">{state.ingredients.find(i=>i.id===id)?.name || id}</span>
                       </li>
                     ))
                   )}
