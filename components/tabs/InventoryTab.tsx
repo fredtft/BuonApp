@@ -17,11 +17,11 @@ export const InventoryTab: React.FC<{
 
   const renderDots = (tags: DietTag[]) => {
     const activeIndicators = tags.filter(t => INDICATORS_CONFIG[t]);
-    if (activeIndicators.length === 0) return null;
+    // Forniamo sempre un contenitore di larghezza fissa (w-2) per allineare le icone
     return (
-      <div className="absolute top-2.5 left-2.5 flex gap-1">
+      <div className="w-2 flex flex-col gap-0.5 shrink-0 items-center justify-center min-h-[14px]">
         {activeIndicators.map(t => (
-          <div key={t} className={`w-2.5 h-2.5 rounded-full border border-white/50 shadow-sm ${INDICATORS_CONFIG[t]?.color}`} />
+          <div key={t} className={`w-1 h-1 rounded-full ${INDICATORS_CONFIG[t]?.color}`} />
         ))}
       </div>
     );
@@ -66,7 +66,7 @@ export const InventoryTab: React.FC<{
         </div>
       </header>
 
-      <div className="p-5 space-y-10">
+      <div className="p-4 space-y-6">
         {(Object.keys(CATEGORY_LABELS) as IngredientCategory[]).map(cat => {
           let items = grouped[cat]?.filter(i => i.name.toLowerCase().includes(searchQuery.toLowerCase())) || [];
           if (showOnlyFavorites) items = items.filter(i => state.favoriteIngredients.includes(i.id));
@@ -77,30 +77,33 @@ export const InventoryTab: React.FC<{
           if (items.length === 0) return null;
           return (
             <div key={cat} className="animate-fade-in">
-              <h3 className="text-[11px] font-black text-slate-300 uppercase tracking-[0.3em] mb-5 flex items-center gap-3"><div className="w-2.5 h-2.5 rounded-full bg-slate-900 shadow-lg" /> {CATEGORY_LABELS[cat]}</h3>
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-4">
+              <h3 className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em] mb-2 flex items-center gap-2.5"><div className="w-1 h-1 rounded-full bg-slate-800" /> {CATEGORY_LABELS[cat]}</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
                 {items.sort((a,b)=>a.name.localeCompare(b.name)).map(ing => {
                   const active = state.inventory.includes(ing.id);
                   const isFav = state.favoriteIngredients.includes(ing.id);
                   return (
-                    <button key={ing.id} onClick={() => onIngredientClick(ing)} className={`relative flex flex-col items-center justify-center py-5 rounded-[1.5rem] border-2 transition-all active:scale-95 ${active && !isEditMode ? 'bg-emerald-500 text-white border-emerald-500 shadow-xl' : 'bg-white text-slate-500 border-slate-100'} ${isEditMode && 'border-dashed border-emerald-400'}`}>
-                      {!isEditMode && renderDots(ing.tags)}
-                      {!isEditMode && (
-                        <div 
-                          onClick={e => { e.stopPropagation(); onToggleFavorite(ing.id); }} 
-                          className="absolute top-1.5 right-1.5 p-1.5 transition-all active:scale-150"
-                        >
-                          <Heart 
-                            size={14} 
-                            fill={isFav ? "#ef4444" : "none"} 
-                            stroke={active ? "#000000" : "#ffffff"} 
-                            strokeWidth={1} 
-                          />
+                    <div key={ing.id} className="relative group">
+                      <button 
+                        onClick={() => onIngredientClick(ing)} 
+                        className={`w-full relative flex flex-row items-center gap-1.5 px-2 py-1.5 rounded-xl border transition-all active:scale-[0.97] overflow-hidden ${active && !isEditMode ? 'bg-emerald-500 text-white border-emerald-500 shadow-md' : 'bg-white text-slate-500 border-slate-100'} ${isEditMode && 'border-dashed border-emerald-400'}`}
+                      >
+                        {renderDots(ing.tags)}
+                        <div className="shrink-0 ml-0.5">
+                          <Icon name={ing.icon} size={14} className={`${active && !isEditMode ? 'scale-110' : ''}`} />
                         </div>
+                        <span className={`flex-1 text-[9px] font-black leading-tight uppercase text-left truncate pr-4 ml-1 ${active && !isEditMode ? 'text-white' : 'text-slate-700'}`}>{ing.name}</span>
+                      </button>
+                      
+                      {!isEditMode && (
+                        <button 
+                          onClick={(e) => { e.stopPropagation(); onToggleFavorite(ing.id); }}
+                          className={`absolute top-0 right-0 p-1.5 transition-all active:scale-125 z-10 ${isFav ? 'text-red-500' : 'text-slate-200'}`}
+                        >
+                          <Heart size={10} fill={isFav ? "currentColor" : "none"} strokeWidth={3} />
+                        </button>
                       )}
-                      <Icon name={ing.icon} size={32} className={`mb-2.5 ${active && !isEditMode ? 'scale-110' : ''}`} />
-                      <span className={`text-[11px] font-black leading-tight uppercase px-1 text-center ${active && !isEditMode ? 'text-white' : 'text-slate-700'}`}>{ing.name}</span>
-                    </button>
+                    </div>
                   )
                 })}
               </div>

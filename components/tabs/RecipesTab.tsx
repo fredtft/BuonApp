@@ -37,9 +37,9 @@ export const RecipesTab: React.FC<{
     const activeIndicators = tags.filter(t => INDICATORS_CONFIG[t]);
     if (activeIndicators.length === 0) return null;
     return (
-      <div className="flex gap-1 mr-3 pr-2 border-r border-slate-100 shrink-0">
+      <div className="flex gap-0.5 mt-0.5">
         {activeIndicators.map(t => (
-          <div key={t} className={`w-2 h-2 rounded-full ${INDICATORS_CONFIG[t]?.color}`} />
+          <div key={t} className={`w-1.5 h-1.5 rounded-full ${INDICATORS_CONFIG[t]?.color}`} />
         ))}
       </div>
     );
@@ -66,14 +66,13 @@ export const RecipesTab: React.FC<{
             )}
         </div>
 
-        {/* Prima riga: Categorie principali */}
-        <div className="flex overflow-x-auto gap-1.5 no-scrollbar justify-center pt-1">
+        {/* Categorie principali su un'unica riga compatta */}
+        <div className="flex gap-1 pt-1">
            {['Tutti', 'Primi', 'Secondi', 'Veg', 'Street'].map(cat => (
-             <button key={cat} onClick={() => setActiveRecipeTab(cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat as any)} className={`whitespace-nowrap px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${activeRecipeTab === (cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat) ? 'bg-orange-500 border-orange-500 text-white shadow-lg' : 'bg-white border-slate-100 text-slate-400 hover:bg-slate-50'}`}>{cat}</button>
+             <button key={cat} onClick={() => setActiveRecipeTab(cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat as any)} className={`flex-1 whitespace-nowrap px-0.5 py-2 rounded-xl text-[9px] font-black uppercase tracking-tighter border transition-all ${activeRecipeTab === (cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat) ? 'bg-orange-500 border-orange-500 text-white shadow-md' : 'bg-white border-slate-100 text-slate-400'}`}>{cat}</button>
            ))}
         </div>
 
-        {/* Seconda riga: Legenda Tag / Indicatori dietetici */}
         <div className="flex justify-center overflow-x-auto gap-2 no-scrollbar py-1">
           {Object.entries(INDICATORS_CONFIG).map(([tag, conf]) => {
             const isActive = activeRecipeTags.includes(tag as DietTag);
@@ -83,7 +82,7 @@ export const RecipesTab: React.FC<{
                 onClick={() => setActiveRecipeTags(prev => isActive ? prev.filter(t => t !== tag) : [...prev, tag as DietTag])}
                 className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all whitespace-nowrap ${isActive ? 'bg-orange-50/80 border-orange-200 text-orange-600 shadow-sm' : 'bg-white border-slate-100 text-slate-400'}`}
               >
-                <div className={`w-1.5 h-1.5 rounded-full ${conf?.color}`} />
+                <div className={`w-1 h-1 rounded-full ${conf?.color}`} />
                 <span className="text-[8px] font-black uppercase tracking-widest">{conf?.label}</span>
               </button>
             );
@@ -98,25 +97,28 @@ export const RecipesTab: React.FC<{
             const missing = r.ingredients.filter(id => !state.inventory.includes(id)).length;
             return (
               <div key={r.id} onClick={() => onRecipeClick(r)} className="bg-white p-4 rounded-[1.5rem] border border-slate-100 flex gap-4 shadow-sm active:scale-[0.98] transition-all relative overflow-hidden cursor-pointer group">
-                <div className={`w-2 h-full absolute left-0 top-0 transition-all group-hover:w-3 ${isCookable ? 'bg-emerald-500' : 'bg-orange-300'}`} />
-                <div className="flex-1 space-y-2 min-w-0">
+                <div className={`w-2 h-full absolute left-0 top-0 transition-all ${isCookable ? 'bg-emerald-500' : 'bg-orange-300'}`} />
+                <div className="flex-1 min-w-0">
                    <div className="flex items-start justify-between">
-                     <div className="flex items-center min-w-0 flex-1">
-                       {renderDots(r.tags)}
-                       <div className="flex flex-col gap-1 min-w-0">
-                        <h3 className="font-black text-slate-800 text-[16px] leading-tight truncate">{r.name}</h3>
-                        <div className="flex flex-wrap gap-1">
-                          {r.tags.slice(0, 3).map(tag => (
+                     <div className="flex flex-col min-w-0 flex-1">
+                        <h3 className="font-black text-slate-800 text-[15px] leading-tight truncate pr-8">{r.name}</h3>
+                        {renderDots(r.tags)}
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {r.tags.slice(0, 2).map(tag => (
                             <TagBadge key={tag} tag={tag} />
                           ))}
                         </div>
-                       </div>
                      </div>
-                     <button onClick={e => { e.stopPropagation(); onToggleFavorite(r.id); }} className={`p-2 transition-all active:scale-150 shrink-0 ${isFav ? 'text-red-500' : 'text-slate-200 hover:text-red-300'}`}><Heart size={20} fill={isFav ? "currentColor" : "none"} /></button>
+                     <button 
+                       onClick={e => { e.stopPropagation(); onToggleFavorite(r.id); }} 
+                       className={`absolute top-0 right-0 p-3 transition-all active:scale-150 z-10 ${isFav ? 'text-red-500' : 'text-slate-200'}`}
+                     >
+                       <Heart size={18} fill={isFav ? "currentColor" : "none"} strokeWidth={3} />
+                     </button>
                    </div>
-                   <div className="flex items-center gap-4 text-[11px] font-black text-slate-400 uppercase tracking-widest">
-                      <span className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-lg border border-slate-100"><Timer size={14} className="text-blue-400" /> {r.prepTime}m</span>
-                      {isCookable ? <span className="text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-100">Pronto</span> : <span className="text-orange-500">Mancano {missing}</span>}
+                   <div className="flex items-center gap-3 mt-3 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                      <span className="flex items-center gap-1.5 bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100"><Timer size={12} className="text-blue-400" /> {r.prepTime}m</span>
+                      {isCookable ? <span className="text-emerald-600 font-black">Pronto</span> : <span className="text-orange-500 font-black">Mancano {missing}</span>}
                    </div>
                 </div>
               </div>

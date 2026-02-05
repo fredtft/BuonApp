@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState, useEffect } from 'react';
-import { RefreshCw, ArrowRight, Refrigerator, ShoppingBasket, Heart, Clock, Flame, ChefHat, Filter, ChevronDown, ChevronUp, Star, Search, Sparkles } from 'lucide-react';
+import { RefreshCw, ArrowRight, Refrigerator, ShoppingBasket, Heart, Clock, Flame, ChefHat, Filter, ChevronDown, ChevronUp, Search, Sparkles } from 'lucide-react';
 import { Recipe, AppState, DietTag, TAG_LABELS, DietConstraintState } from '../../types';
 import { validateRecipeByMatrix } from '../../App';
 import TagBadge from '../TagBadge';
@@ -105,22 +105,33 @@ export const HomeTab: React.FC<{
                 </div>
                 <div className="flex flex-col items-start text-left">
                   <span className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Stile Pasto</span>
-                  <span className="text-xs font-black text-slate-800">Filtra Suggerimenti</span>
+                  <span className="text-xs font-black text-slate-800">Personalizza suggerimenti</span>
                 </div>
                 {isFiltersOpen ? <ChevronUp size={14} className="text-slate-400" /> : <ChevronDown size={14} className="text-slate-400" />}
               </button>
               <button onClick={() => setOnlyFavorites(!onlyFavorites)} className={`p-2.5 rounded-2xl transition-all shadow-sm ${onlyFavorites ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-slate-50 text-slate-300'}`}>
-                <Star size={18} fill={onlyFavorites ? "currentColor" : "none"} />
+                <Heart size={18} fill={onlyFavorites ? "currentColor" : "none"} />
               </button>
             </div>
             
             {isFiltersOpen && (
               <div className="px-4 pb-5 bg-slate-50/50 animate-fade-in border-t border-slate-50 pt-4">
+                <div className="bg-slate-200/50 p-2.5 rounded-xl mb-4 text-[9px] font-bold text-slate-400 leading-relaxed uppercase tracking-tighter text-center">
+                  Ciclo: <span className="text-emerald-600 font-black">Autorizzato</span> → <span className="text-slate-900 font-black">Obbligatorio</span> → <span className="text-red-500 font-black">Vietato</span>
+                </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {(Object.keys(TAG_LABELS) as DietTag[]).map(tag => {
                     const s = localConstraints[tag];
                     return (
-                      <button key={tag} onClick={() => toggleLocalConstraint(tag)} className={`px-2 py-3 rounded-xl border flex flex-col items-center justify-center transition-all ${s === 1 ? 'bg-slate-900 text-white border-slate-900' : s === -1 ? 'bg-red-500 text-white border-red-500' : 'bg-white border-slate-200 text-slate-500'}`}>
+                      <button 
+                        key={tag} 
+                        onClick={() => toggleLocalConstraint(tag)} 
+                        className={`px-2 py-3 rounded-xl border flex flex-col items-center justify-center transition-all ${
+                          s === 1 ? 'bg-slate-900 text-white border-slate-900 shadow-md' : 
+                          s === -1 ? 'bg-red-500 text-white border-red-500 shadow-md' : 
+                          'bg-emerald-50 text-emerald-600 border-emerald-100'
+                        }`}
+                      >
                         <span className="text-[10px] font-black uppercase text-center truncate w-full">{TAG_LABELS[tag].label}</span>
                       </button>
                     );
@@ -133,14 +144,27 @@ export const HomeTab: React.FC<{
           {heroRecipe ? (
             <div className="relative group cursor-pointer" onClick={() => onRecipeClick(heroRecipe)}>
               <div className="absolute -inset-1 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-[2.5rem] blur opacity-10" />
-              <div className="relative bg-white rounded-[2.5rem] p-6 md:p-12 shadow-xl border border-slate-50 flex flex-col gap-6 items-center overflow-hidden transition-transform active:scale-[0.98]">
-                <button onClick={(e) => { e.stopPropagation(); rollHero(); }} className="absolute top-4 right-4 w-10 h-10 flex items-center justify-center rounded-2xl bg-slate-50 border border-slate-100 text-slate-400 active:rotate-180 transition-all z-10"><RefreshCw size={18} /></button>
-                <div className="flex-1 space-y-4 w-full">
-                  <h2 className="text-3xl md:text-5xl font-black text-slate-800 leading-tight tracking-tight">{heroRecipe.name}</h2>
+              <div className="relative bg-white rounded-[2.5rem] p-6 md:p-12 shadow-xl border border-slate-50 flex flex-col gap-5 items-start overflow-hidden transition-transform active:scale-[0.98]">
+                <div className="absolute top-4 right-4 flex gap-2">
+                   {state.favoriteRecipes.includes(heroRecipe.id) && (
+                     <div className="w-10 h-10 flex items-center justify-center rounded-2xl bg-red-50 text-red-500 border border-red-100 shadow-sm">
+                       <Heart size={18} fill="currentColor" />
+                     </div>
+                   )}
+                  <button onClick={(e) => { e.stopPropagation(); rollHero(); }} className="w-10 h-10 flex items-center justify-center rounded-2xl bg-slate-50 border border-slate-100 text-slate-400 active:rotate-180 transition-all shadow-sm"><RefreshCw size={18} /></button>
+                </div>
+                
+                <div className="flex-1 space-y-4 w-full pt-6">
+                  <h2 className="text-lg md:text-2xl font-black text-slate-800 leading-tight tracking-tight pr-12">{heroRecipe.name}</h2>
                   <div className="flex flex-wrap gap-1">{heroRecipe.tags.slice(0, 3).map(tag => <TagBadge key={tag} tag={tag} />)}</div>
                   <div className="flex items-center gap-4 text-[12px] text-slate-400 font-black uppercase">
                     <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100"><Clock size={14} className="text-blue-400"/> <span>{heroRecipe.prepTime}m</span></div>
                     <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1.5 rounded-xl border border-slate-100"><Flame size={14} className="text-orange-400"/> <span>{heroRecipe.nutrition.calories} kcal</span></div>
+                  </div>
+                  <div className="pt-2">
+                    <button className="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-slate-200">
+                      Cucina ora <ArrowRight size={18} />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -156,7 +180,7 @@ export const HomeTab: React.FC<{
 
       {candidates.length > 0 && (
         <div className="fixed bottom-24 left-0 right-0 flex justify-center px-6 pointer-events-none z-[40]">
-          <button onClick={() => setIsOptionsModalOpen(true)} className="pointer-events-auto flex items-center gap-4 bg-slate-900 text-white pl-6 pr-5 py-4 rounded-3xl shadow-2xl active:scale-95 transition-all">
+          <button onClick={() => setIsOptionsModalOpen(true)} className="pointer-events-auto flex items-center gap-4 bg-slate-900 text-white pl-6 pr-5 py-4 rounded-3xl shadow-2xl active:scale-95 transition-all border border-white/10">
             <div className="flex flex-col items-start leading-none">
               <span className="text-[9px] font-black uppercase text-emerald-400 tracking-widest mb-1">Pasto Suggerito</span>
               <span className="text-xs font-black uppercase tracking-widest">{candidates.length} Opzioni</span>

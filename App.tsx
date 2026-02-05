@@ -233,7 +233,7 @@ export default function App() {
              <div className="flex flex-wrap gap-2 justify-center">{editingRecipe.tags.map(t => <TagBadge key={t} tag={t} />)}</div>
              
              <div className="space-y-4">
-               <h4 className="text-[10px] font-black uppercase text-slate-400">Ingredienti</h4>
+               <h4 className="text-[10px] font-black uppercase text-slate-400">Ingredienti necessari</h4>
                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                  {editingRecipe.ingredients.map(id => {
                    const ing = state.ingredients.find(i=>i.id===id);
@@ -242,6 +242,19 @@ export default function App() {
                  })}
                </div>
              </div>
+
+             {editingRecipe.optionalIngredients && editingRecipe.optionalIngredients.length > 0 && (
+               <div className="space-y-4">
+                 <h4 className="text-[10px] font-black uppercase text-slate-400">Ingredienti facoltativi</h4>
+                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                   {editingRecipe.optionalIngredients.map(id => {
+                     const ing = state.ingredients.find(i=>i.id===id);
+                     const inStock = state.inventory.includes(id);
+                     return <div key={id} className={`p-3 rounded-xl border flex items-center justify-between text-xs font-bold italic opacity-80 ${inStock ? 'bg-emerald-50/10 border-emerald-100 text-emerald-600' : 'bg-slate-50/50 border-slate-100 text-slate-400'}`}>{ing?.name || id}{inStock ? <Check size={14}/> : <X size={14} className="text-slate-400" />}</div>
+                   })}
+                 </div>
+               </div>
+             )}
 
              <div>
                <h4 className="text-[10px] font-black uppercase text-slate-400 mb-2">Procedimento</h4>
