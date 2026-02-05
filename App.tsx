@@ -152,6 +152,16 @@ export default function App() {
     localStorage.setItem('buonapp_state', JSON.stringify(state));
   }, [state]);
 
+  // Passaggio automatico a 'spesa' se non ci sono ricette cucinabili all'apertura o modifica inventario
+  useEffect(() => {
+    if (activeTab === 'home' && homeFilterMode === 'frigo') {
+      const cookableCount = state.recipes.filter(r => r.ingredients.every(id => state.inventory.includes(id))).length;
+      if (cookableCount === 0) {
+        setHomeFilterMode('spesa');
+      }
+    }
+  }, [activeTab, state.inventory, state.recipes, homeFilterMode]);
+
   const filteredRecipes = useMemo(() => {
     let list = state.recipes;
     if (searchQuery && (activeTab === 'ricette' || activeTab === 'home')) {
@@ -163,7 +173,7 @@ export default function App() {
       list = list.filter(r => !r.tags.some(tag => indicatorKeys.includes(tag) && !activeRecipeTags.includes(tag)));
     }
     if (activeTab === 'home' && homeFilterMode === 'frigo') {
-      list = list.filter(r => r.ingredients.every(iId => state.inventory.includes(iId)));
+      list = list.filter(r => r.ingredients.every(iId => state.inventory.includes(id => state.inventory.includes(id))));
     }
     return list;
   }, [state.recipes, state.inventory, searchQuery, activeTab, homeFilterMode, activeRecipeTab, activeRecipeTags]);
@@ -463,13 +473,13 @@ export default function App() {
   );
 
   const renderBatch = () => (
-    <div className="flex flex-col max-w-6xl mx-auto w-full md:px-8">
-      <header className="p-4 bg-white shadow-sm flex justify-between items-center mb-2 rounded-b-[2rem] sticky top-0 z-20">
+    <div className="flex flex-col max-w-6xl mx-auto w-full md:px-8 h-full">
+      <header className="p-4 bg-white/95 backdrop-blur-md shadow-sm flex justify-between items-center rounded-b-[2rem] sticky top-0 z-20">
          <h2 className="text-lg font-black text-slate-800 flex items-center gap-2.5"><CalendarDays className="text-emerald-500" size={22}/> Batch Cooking</h2>
       </header>
-      <div className="pb-32">
+      <div className="flex-1 overflow-y-auto px-5 pb-32 pt-2 no-scrollbar">
         {state.mealPlan.length === 0 ? (
-          <div className="px-5 space-y-5 py-4">
+          <div className="space-y-5 py-2">
             <div className="bg-white p-6 rounded-[2rem] border border-slate-100 space-y-6 shadow-sm">
               <h3 className="text-xs font-black uppercase tracking-[0.2em] border-b pb-4 flex items-center gap-2"><Zap className="text-amber-500" size={16}/> Opzioni Piano</h3>
               <div className="flex justify-between items-center text-xs">
@@ -492,7 +502,7 @@ export default function App() {
             </div>
           </div>
         ) : (
-          <div className="px-5 space-y-5 pt-2">
+          <div className="space-y-5 py-2">
             <div className="flex justify-between items-center px-1"><span className="text-[11px] font-black text-slate-400 uppercase tracking-widest">Menu della Settimana</span><button onClick={()=>setState(p=>({...p,mealPlan:[]}))} className="text-[10px] text-red-500 font-bold bg-red-50 px-3 py-1.5 rounded-xl hover:bg-red-100">Resetta</button></div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
               {state.mealPlan.map(day=>(
@@ -505,12 +515,12 @@ export default function App() {
                 </div>
               ))}
             </div>
-            {/* LISTA SPESA COMPATTA */}
+            {/* LISTA SPESA ULTRA COMPATTA */}
             <div className="bg-slate-900 text-slate-300 rounded-[1.5rem] p-4 shadow-2xl relative overflow-hidden">
                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 blur-3xl -z-10" />
                <h3 className="font-black text-white text-[9px] mb-3 flex items-center gap-2 border-b border-slate-700 pb-2.5 uppercase tracking-widest"><ShoppingBasket className="text-emerald-400" size={14}/> Lista Spesa</h3>
-               <ul className="grid grid-cols-2 gap-1.5 text-[9px] font-medium">
-                  {getShoppingList().length === 0 ? <li className="opacity-50 italic py-2 col-span-2">Dispensa completa!</li> : getShoppingList().map(id => <li key={id} className="flex items-center gap-2 bg-slate-800/40 p-1.5 rounded-lg border border-slate-700/50"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-sm" /><span className="truncate text-slate-200">{state.ingredients.find(i=>i.id===id)?.name || id}</span></li>)}
+               <ul className="grid grid-cols-2 gap-1 text-[9px] font-medium">
+                  {getShoppingList().length === 0 ? <li className="opacity-50 italic py-2 col-span-2">Dispensa completa!</li> : getShoppingList().map(id => <li key={id} className="flex items-center gap-2 bg-slate-800/40 px-2 py-1 rounded-lg border border-slate-700/50"><div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shrink-0" /><span className="truncate text-slate-200">{state.ingredients.find(i=>i.id===id)?.name || id}</span></li>)}
                </ul>
             </div>
           </div>
@@ -520,11 +530,11 @@ export default function App() {
   );
 
   const renderParams = () => (
-    <div className="flex flex-col max-w-6xl mx-auto w-full md:px-8">
-      <header className="p-4 bg-white shadow-sm flex justify-between items-center mb-2 rounded-b-[2rem] sticky top-0 z-20">
+    <div className="flex flex-col max-w-6xl mx-auto w-full md:px-8 h-full">
+      <header className="p-4 bg-white/95 backdrop-blur-md shadow-sm flex justify-between items-center rounded-b-[2rem] sticky top-0 z-20">
          <h2 className="text-lg font-black text-slate-800 flex items-center gap-2.5"><Settings className="text-slate-400" size={22}/> Impostazioni</h2>
       </header>
-      <div className="px-4 space-y-4 pb-32">
+      <div className="flex-1 overflow-y-auto px-4 space-y-4 pb-32 pt-2 no-scrollbar">
          {/* MATRICE PASTI PIÙ COMPATTA */}
          <div className="bg-white rounded-[1.5rem] p-4 border border-slate-100 shadow-sm">
            <h3 className="text-[10px] font-black mb-3 uppercase tracking-widest border-b border-slate-50 pb-2 flex items-center gap-2"><SlidersHorizontal size={12} className="text-emerald-500"/> Matrice Pasti</h3>
@@ -579,7 +589,7 @@ export default function App() {
             </button>
          </div>
 
-         <div className="text-center opacity-20 py-2"><p className="text-[8px] font-black uppercase tracking-[0.4em]">BuonApp v0.7.9</p></div>
+         <div className="text-center opacity-20 py-2"><p className="text-[8px] font-black uppercase tracking-[0.4em]">BuonApp v0.8.1</p></div>
       </div>
     </div>
   );
@@ -629,7 +639,8 @@ export default function App() {
            </nav>
       </aside>
       <main className="flex-1 h-full overflow-hidden relative flex flex-col">
-        <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth">
+        {/* L'animazione tab-change viene applicata ogni volta che activeTab cambia grazie alla key */}
+        <div key={activeTab} className="flex-1 overflow-y-auto no-scrollbar scroll-smooth animate-tab-change">
            {activeTab === 'home' && renderHome()}
            {activeTab === 'frigo' && renderInventory()}
            {activeTab === 'ricette' && renderRecipes()}
@@ -672,8 +683,55 @@ export default function App() {
                <div className="bg-emerald-50/50 p-3.5 rounded-2xl flex flex-col items-center text-emerald-600 border border-emerald-100 shadow-sm"><Dumbbell size={20} /><span className="text-xl font-black mt-0.5">{editingRecipe.nutrition.protein}g</span><span className="text-[8px] font-black uppercase opacity-60 tracking-widest">Prot</span></div>
              </div>
              <div className="flex flex-wrap gap-2 justify-center py-1"><TagBadge tag={editingRecipe.category as any} />{editingRecipe.tags.map(t => <TagBadge key={t} tag={t} />)}</div>
-             <div><h3 className="font-black text-slate-800 mb-3 text-[11px] uppercase border-b border-slate-50 pb-2 flex items-center gap-2 tracking-widest">Ingredienti</h3><ul className="grid gap-2">{editingRecipe.ingredients.map(id => {const ing = state.ingredients.find(i => i.id === id);const inStock = state.inventory.includes(id);return (<li key={id} className={`flex items-center justify-between p-3.5 rounded-2xl bg-white border shadow-sm transition-all ${inStock ? 'border-emerald-200 bg-emerald-50/5' : 'border-red-50 bg-red-50/5'}`}><span className="flex items-center gap-3 font-bold text-slate-700 text-[13px] truncate">{ing && <Icon name={ing.icon} size={16} className="text-slate-400"/>}<span className="truncate">{ing?.name || id}</span></span>{inStock ? <Check size={18} className="text-emerald-500" strokeWidth={4} /> : <X size={18} className="text-red-300" strokeWidth={4} />}</li>);})}</ul></div>
-             <div><h3 className="font-black text-slate-800 mb-3 text-[11px] uppercase border-b border-slate-50 pb-2 flex items-center gap-2 tracking-widest">Procedimento</h3><div className="p-5 bg-slate-50 rounded-[1.5rem] text-slate-600 text-[13px] leading-relaxed whitespace-pre-wrap border border-slate-100 font-medium shadow-inner">{editingRecipe.instructions}</div></div>
+             
+             {/* INGREDIENTI RICHIESTI - 2 COLONNE */}
+             <div>
+               <h3 className="font-black text-slate-800 mb-3 text-[11px] uppercase border-b border-slate-50 pb-2 flex items-center gap-2 tracking-widest">Ingredienti Richiesti</h3>
+               <ul className="grid grid-cols-2 gap-2">
+                 {editingRecipe.ingredients.map(id => {
+                   const ing = state.ingredients.find(i => i.id === id);
+                   const inStock = state.inventory.includes(id);
+                   return (
+                     <li key={id} className={`flex items-center justify-between p-2.5 rounded-xl bg-white border shadow-sm transition-all ${inStock ? 'border-emerald-200 bg-emerald-50/10' : 'border-slate-100'}`}>
+                       <span className="flex items-center gap-2 font-bold text-slate-700 text-[11px] truncate">
+                         {ing && <Icon name={ing.icon} size={14} className={inStock ? "text-emerald-500" : "text-slate-300"}/>}
+                         <span className="truncate">{ing?.name || id}</span>
+                       </span>
+                       {inStock ? <Check size={14} className="text-emerald-500" strokeWidth={4} /> : <X size={14} className="text-slate-200" strokeWidth={3} />}
+                     </li>
+                   );
+                 })}
+               </ul>
+             </div>
+             
+             {/* INGREDIENTI OPZIONALI - 2 COLONNE */}
+             {editingRecipe.optionalIngredients && editingRecipe.optionalIngredients.length > 0 && (
+               <div>
+                 <h3 className="font-black text-slate-500 mb-3 text-[11px] uppercase border-b border-slate-50 pb-2 flex items-center gap-2 tracking-widest italic">Opzionali</h3>
+                 <ul className="grid grid-cols-2 gap-2">
+                   {editingRecipe.optionalIngredients.map(id => {
+                     const ing = state.ingredients.find(i => i.id === id);
+                     const inStock = state.inventory.includes(id);
+                     return (
+                       <li key={id} className={`flex items-center justify-between p-2.5 rounded-xl border border-dashed transition-all ${inStock ? 'border-emerald-200 bg-emerald-50/5 text-emerald-800' : 'border-slate-100 text-slate-400 opacity-60'}`}>
+                         <span className="flex items-center gap-2 font-bold text-[11px] truncate italic">
+                           {ing && <Icon name={ing.icon} size={14} className={inStock ? "text-emerald-400" : "text-slate-200"}/>}
+                           <span className="truncate">{ing?.name || id}</span>
+                         </span>
+                         {inStock && <Check size={14} className="text-emerald-400" strokeWidth={3} />}
+                       </li>
+                     );
+                   })}
+                 </ul>
+               </div>
+             )}
+             
+             <div>
+               <h3 className="font-black text-slate-800 mb-3 text-[11px] uppercase border-b border-slate-50 pb-2 flex items-center gap-2 tracking-widest">Procedimento</h3>
+               <div className="p-4 bg-slate-50 rounded-[1.5rem] text-slate-600 text-[13px] leading-relaxed whitespace-pre-wrap border border-slate-100 font-medium shadow-inner">
+                 {editingRecipe.instructions}
+               </div>
+             </div>
           </div>
         )}
       </Modal>
