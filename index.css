@@ -1,31 +1,34 @@
 
 /* --- Variabili e Reset --- */
 :root {
-  --app-height: 100dvh;
+  --app-height: 100%;
 }
 
 html, body {
-  height: var(--app-height);
+  height: 100%;
+  height: -webkit-fill-available;
   overflow: hidden;
   margin: 0;
   padding: 0;
   position: fixed;
   width: 100%;
+  background-color: #f8fafc; /* slate-50 */
 }
 
 body {
   -webkit-tap-highlight-color: transparent;
   overscroll-behavior-y: none;
-  background-color: #f8fafc; /* slate-50 */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji";
 }
 
 #root {
-  height: var(--app-height);
+  height: 100%;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
 }
 
-/* --- Classi di Utilità --- */
+/* --- Classi di Utilità Mobile --- */
 .no-scrollbar::-webkit-scrollbar { 
   display: none; 
 }
@@ -35,34 +38,39 @@ body {
   scrollbar-width: none; 
 }
 
-.safe-bottom { 
-  padding-bottom: env(safe-area-inset-bottom); 
+/* Gestione Aree Sicure (Notch e Indicatori Home) */
+.safe-p-top { 
+  padding-top: env(safe-area-inset-top, 20px); 
 }
 
-.safe-top { 
-  padding-top: env(safe-area-inset-top); 
+.safe-p-bottom { 
+  padding-bottom: env(safe-area-inset-bottom, 20px); 
 }
 
-/* --- Animazioni --- */
+.safe-m-bottom {
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* --- Animazioni Ottimizzate --- */
 @keyframes fade-in { 
-  from { opacity: 0; transform: scale(0.98); } 
-  to { opacity: 1; transform: scale(1); } 
+  from { opacity: 0; transform: translateY(10px); } 
+  to { opacity: 1; transform: translateY(0); } 
 }
 
 .animate-fade-in { 
-  animation: fade-in 0.1s cubic-bezier(0.2, 0, 0, 1) forwards; 
+  animation: fade-in 0.25s cubic-bezier(0.2, 0, 0, 1) forwards; 
 }
 
 @keyframes tab-slide {
-  from { opacity: 0.3; transform: translateX(20px); filter: blur(2px); }
-  to { opacity: 1; transform: translateX(0); filter: blur(0); }
+  from { opacity: 0; transform: scale(0.98); filter: blur(4px); }
+  to { opacity: 1; transform: scale(1); filter: blur(0); }
 }
 
 .animate-tab-change {
-  animation: tab-slide 0.15s cubic-bezier(0.33, 1, 0.68, 1) forwards;
+  animation: tab-slide 0.2s cubic-bezier(0.33, 1, 0.68, 1) forwards;
 }
 
-/* --- Personalizzazione Scrollbar (Modali) --- */
+/* --- Personalizzazione Scrollbar --- */
 .custom-scrollbar::-webkit-scrollbar { 
   width: 4px; 
 }
@@ -74,4 +82,9 @@ body {
 .custom-scrollbar::-webkit-scrollbar-thumb { 
   background-color: #e2e8f0; 
   border-radius: 10px; 
+}
+
+/* Fix per input su iOS per evitare lo zoom automatico */
+input, select, textarea {
+  font-size: 16px !important;
 }

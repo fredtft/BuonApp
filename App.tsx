@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { Home, ChefHat, CalendarDays, Settings, Refrigerator, Clock, Flame, Dumbbell, X, Check, Database, List } from 'lucide-react';
+import { Home, ChefHat, CalendarDays, Settings, Refrigerator, Clock, Flame, Dumbbell, X, Check } from 'lucide-react';
 import Modal from './components/Modal';
 import IngredientEditor from './components/IngredientEditor';
 import RecipeEditor from './components/RecipeEditor';
-import Icon from './components/Icon';
+import TagBadge from './components/TagBadge';
 
-import { Ingredient, Recipe, AppState, ViewMode, DietTag, MealPlanDay, TAG_LABELS, INDICATORS_CONFIG, DietConstraintState } from './types';
+import { Ingredient, Recipe, AppState, ViewMode, DietTag, MealPlanDay, INDICATORS_CONFIG, DietConstraintState } from './types';
 import { INITIAL_INGREDIENTS, INITIAL_RECIPES } from './database/index';
 
 import { HomeTab } from './components/tabs/HomeTab';
@@ -14,23 +14,22 @@ import { RecipesTab } from './components/tabs/RecipesTab';
 import { InventoryTab } from './components/tabs/InventoryTab';
 import { BatchTab } from './components/tabs/BatchTab';
 import { SettingsTab } from './components/tabs/SettingsTab';
-import TagBadge from './components/TagBadge';
 
 const TABS: {id: ViewMode, icon: any, label: string}[] = [
   { id: 'home', icon: Home, label: 'Home' },
   { id: 'frigo', icon: Refrigerator, label: 'Dispensa' },
   { id: 'ricette', icon: ChefHat, label: 'Ricette' },
-  { id: 'batch', icon: CalendarDays, label: 'Batch Cooking' },
+  { id: 'batch', icon: CalendarDays, label: 'Batch' },
   { id: 'parametri', icon: Settings, label: 'Impostazioni' },
 ];
 
 export const validateRecipeByMatrix = (r: Recipe, constraints: Record<DietTag, DietConstraintState>) => {
+  if (!constraints) return true;
   for (const tagKey in constraints) {
     const tag = tagKey as DietTag;
     const state = constraints[tag];
-    
-    if (state === 1 && !r.tags.includes(tag)) return false; // Obbligatorio ma mancante
-    if (state === -1 && r.tags.includes(tag)) return false; // Vietato ma presente
+    if (state === 1 && !r.tags.includes(tag)) return false;
+    if (state === -1 && r.tags.includes(tag)) return false;
   }
   return true;
 };
@@ -45,8 +44,7 @@ export default function App() {
   const [homeFilterMode, setHomeFilterMode] = useState<'frigo' | 'spesa'>('frigo');
   
   const [state, setState] = useState<AppState>(() => {
-    const saved = localStorage.getItem('buonapp_state');
-    const baseState = {
+    const baseState: AppState = {
       inventory: [],
       recipes: INITIAL_RECIPES,
       ingredients: INITIAL_INGREDIENTS,
@@ -54,25 +52,37 @@ export default function App() {
       favoriteRecipes: [],
       userPreferences: { 
         dietMatrix: { lunch: getDefaultMatrix(), dinner: getDefaultMatrix() }, 
-        batchStrategy: 'Eco' 
+        batchStrategy: 'Eco'
       },
       mealPlan: []
     };
 
-    if (saved) {
-      try {
-        const loaded = JSON.parse(saved);
-        const existingRecipeIds = new Set((loaded.recipes || []).map((r: Recipe) => r.id));
-        const newRecipesFromDb = INITIAL_RECIPES.filter(r => !existingRecipeIds.has(r.id));
-        
-        return {
-          ...loaded,
-          ingredients: loaded.ingredients || INITIAL_INGREDIENTS,
-          recipes: [...(loaded.recipes || []), ...newRecipesFromDb],
-        };
-      } catch (e) { console.error(e); }
+    const saved = localStorage.getItem('buonapp_state');
+    if (!saved) return baseState;
+
+    try {
+      const loaded = JSON.parse(saved);
+      // Caricamento difensivo: verifica che le strutture chiave siano corrette
+      return {
+        ...baseState,
+        ...loaded,
+        inventory: Array.isArray(loaded.inventory) ? loaded.inventory : baseState.inventory,
+        favoriteIngredients: Array.isArray(loaded.favoriteIngredients) ? loaded.favoriteIngredients : baseState.favoriteIngredients,
+        favoriteRecipes: Array.isArray(loaded.favoriteRecipes) ? loaded.favoriteRecipes : baseState.favoriteRecipes,
+        mealPlan: Array.isArray(loaded.mealPlan) ? loaded.mealPlan : baseState.mealPlan,
+        // Mantieni i dati iniziali se quelli caricati non sono validi o sono vuoti in modo anomalo
+        ingredients: (Array.isArray(loaded.ingredients) && loaded.ingredients.length > 0) ? loaded.ingredients : INITIAL_INGREDIENTS,
+        recipes: (Array.isArray(loaded.recipes) && loaded.recipes.length > 0) ? loaded.recipes : INITIAL_RECIPES,
+        userPreferences: {
+          ...baseState.userPreferences,
+          ...(loaded.userPreferences || {}),
+          dietMatrix: loaded.userPreferences?.dietMatrix || baseState.userPreferences.dietMatrix
+        }
+      };
+    } catch (e) { 
+      console.error("Errore nel ripristino dello stato salvato:", e); 
+      return baseState;
     }
-    return baseState;
   });
 
   const [inventorySearchQuery, setInventorySearchQuery] = useState('');
@@ -88,8 +98,6 @@ export default function App() {
   const [batchDays, setBatchDays] = useState(3);
   const [batchMeals, setBatchMeals] = useState<'lunch' | 'dinner' | 'both'>('both');
   const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
-
-  // Stato per la modale dei suggerimenti (sollevata per nascondere la nav)
   const [isOptionsModalOpen, setIsOptionsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -163,15 +171,16 @@ export default function App() {
       );
     }
     return (
-      <button onClick={()=>{setActiveTab(id);}} className="flex flex-col items-center justify-center flex-1 transition-all active:scale-[0.85]">
+      <button onClick={()=>{setActiveTab(id);}} className="flex flex-col items-center justify-center flex-1 h-full transition-all active:scale-[0.85]">
         <IconC size={20} className={isActive ? activeColor : 'text-slate-400'} />
-        <span className={`text-[7px] font-black uppercase mt-1 ${isActive ? activeColor : 'text-slate-400'}`}>{label}</span>
+        <span className={`text-[8px] font-black uppercase mt-1 ${isActive ? activeColor : 'text-slate-400'}`}>{label}</span>
       </button>
     );
   };
 
   return (
-    <div className="h-full w-screen bg-slate-50 font-sans text-slate-900 overflow-hidden flex">
+    <div className="h-full w-screen bg-slate-50 font-sans text-slate-900 overflow-hidden flex flex-col lg:flex-row">
+      {/* Sidebar Desktop */}
       <aside className="hidden lg:flex flex-col w-72 bg-white border-r h-full shadow-2xl z-50">
         <div className="p-8 pb-4">
           <div className="flex items-center gap-3 mb-8">
@@ -190,20 +199,8 @@ export default function App() {
             </button>
           ))}
         </nav>
-        <div className="p-8 border-t border-slate-50 space-y-4 text-center">
-          <div className="grid grid-cols-1 gap-2">
-            <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between text-[11px] font-black group hover:bg-emerald-50 transition-colors cursor-pointer" onClick={() => setActiveTab('frigo')}>
-               <div className="flex items-center gap-2 text-slate-500 group-hover:text-emerald-600 transition-colors"><Refrigerator size={14} className="text-emerald-500"/> DISPENSA</div>
-               <span className="text-emerald-600">{state.inventory.length} / {state.ingredients.length}</span>
-            </div>
-            <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 flex items-center justify-between text-[11px] font-black group hover:bg-orange-50 transition-colors cursor-pointer" onClick={() => setActiveTab('ricette')}>
-               <div className="flex items-center gap-2 text-slate-500 group-hover:text-orange-600 transition-colors"><ChefHat size={14} className="text-orange-500"/> RICETTE</div>
-               <span className="text-orange-600">{state.recipes.length}</span>
-            </div>
-          </div>
-          <p className="text-[8px] font-black text-slate-300 uppercase tracking-widest">v1.1.0</p>
-        </div>
       </aside>
+
       <main className="flex-1 h-full overflow-hidden relative">
         <div key={activeTab} className="h-full overflow-y-auto no-scrollbar animate-tab-change">
            {activeTab === 'home' && <HomeTab state={state} onRecipeClick={setEditingRecipe} homeFilterMode={homeFilterMode} setHomeFilterMode={setHomeFilterMode} onToggleFavorite={toggleFavoriteRecipe} isOptionsModalOpen={isOptionsModalOpen} setIsOptionsModalOpen={setIsOptionsModalOpen} />}
@@ -213,8 +210,10 @@ export default function App() {
            {activeTab === 'parametri' && <SettingsTab state={state} setState={setState} />}
         </div>
       </main>
+
+      {/* Modali */}
       <Modal isOpen={!!editingIngredient} onClose={() => setEditingIngredient(null)} title={isNewIngredient ? "Nuovo Ingrediente" : "Modifica"}>
-          {editingIngredient && <IngredientEditor initialData={editingIngredient} isNew={isNewIngredient} onSave={ing => { setState(prev => { let ings = [...prev.ingredients]; if (isNewIngredient) { ing.id = ing.name.toLowerCase().replace(/\s/g,'_'); ings.push(ing); } else ings = ings.map(i => i.id === ing.id ? ing : i); return { ...prev, ingredients: ings }; }); setEditingIngredient(null); }} onDelete={id => { setState(p=>({...p, ingredients: p.ingredients.filter(i=>i.id!==id)})); setEditingIngredient(null); }} onCancel={() => setEditingIngredient(null)} />}
+          {editingIngredient && <IngredientEditor initialData={editingIngredient} isNew={isNewIngredient} onSave={ing => { setState(prev => { let ings = [...prev.ingredients]; if (isNewIngredient) { ing.id = ing.name.toLowerCase().replace(/\s/g,'_') + '_' + Date.now(); ings.push(ing); } else ings = ings.map(i => i.id === ing.id ? ing : i); return { ...prev, ingredients: ings }; }); setEditingIngredient(null); }} onDelete={id => { setState(p=>({...p, ingredients: p.ingredients.filter(i=>i.id!==id), inventory: p.inventory.filter(i=>i!==id)})); setEditingIngredient(null); }} onCancel={() => setEditingIngredient(null)} />}
       </Modal>
       <Modal 
         isOpen={!!editingRecipe} 
@@ -234,28 +233,15 @@ export default function App() {
              <div className="flex flex-wrap gap-2 justify-center">{editingRecipe.tags.map(t => <TagBadge key={t} tag={t} />)}</div>
              
              <div className="space-y-4">
-               <h4 className="text-[10px] font-black uppercase text-slate-400">Ingredienti Necessari</h4>
-               <div className="grid grid-cols-2 gap-2">
+               <h4 className="text-[10px] font-black uppercase text-slate-400">Ingredienti</h4>
+               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                  {editingRecipe.ingredients.map(id => {
                    const ing = state.ingredients.find(i=>i.id===id);
                    const inStock = state.inventory.includes(id);
-                   return <div key={id} className={`p-2.5 rounded-xl border flex items-center justify-between text-[11px] font-bold ${inStock ? 'bg-emerald-50/10 border-emerald-200 text-emerald-700' : 'bg-red-50/10 border-red-200 text-red-600'}`}>{ing?.name || id}{inStock ? <Check size={14}/> : <X size={14}/>}</div>
+                   return <div key={id} className={`p-3 rounded-xl border flex items-center justify-between text-xs font-bold ${inStock ? 'bg-emerald-50/20 border-emerald-200 text-emerald-700' : 'bg-red-50/20 border-red-200 text-red-600'}`}>{ing?.name || id}{inStock ? <Check size={14}/> : <X size={14}/>}</div>
                  })}
                </div>
              </div>
-
-             {editingRecipe.optionalIngredients && editingRecipe.optionalIngredients.length > 0 && (
-                <div className="space-y-4">
-                  <h4 className="text-[10px] font-black uppercase text-slate-400">Ingredienti Facoltativi</h4>
-                  <div className="grid grid-cols-2 gap-2">
-                    {editingRecipe.optionalIngredients.map(id => {
-                      const ing = state.ingredients.find(i=>i.id===id);
-                      const inStock = state.inventory.includes(id);
-                      return <div key={id} className={`p-2.5 rounded-xl border flex items-center justify-between text-[11px] font-bold ${inStock ? 'bg-emerald-50/10 border-emerald-200 text-emerald-700' : 'bg-red-50/10 border-red-200 text-red-600 opacity-60'}`}>{ing?.name || id}{inStock ? <Check size={14}/> : <X size={14}/>}</div>
-                    })}
-                  </div>
-                </div>
-             )}
 
              <div>
                <h4 className="text-[10px] font-black uppercase text-slate-400 mb-2">Procedimento</h4>
@@ -265,16 +251,15 @@ export default function App() {
         ))}
       </Modal>
 
+      {/* Navigazione Mobile */}
       {!isAnyModalOpen && (
-        <div className="lg:hidden fixed bottom-6 left-0 right-0 z-50 px-4 animate-fade-in">
-          <div className="max-w-[340px] mx-auto bg-white/95 backdrop-blur-2xl rounded-full border border-white/40 shadow-2xl h-14 flex items-center">
-            <MobileNavButton id="frigo" icon={Refrigerator} activeColor="text-cyan-500" label="Frigo" />
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-[60] safe-p-bottom bg-white/95 backdrop-blur-xl border-t border-slate-100 shadow-[0_-8px_30px_rgba(0,0,0,0.05)] h-20 flex items-center px-4">
+            <MobileNavButton id="frigo" icon={Refrigerator} activeColor="text-emerald-500" label="Dispensa" />
             <MobileNavButton id="ricette" icon={ChefHat} activeColor="text-orange-500" label="Ricette" />
-            <MobileNavButton id="home" icon={Home} activeColor="text-emerald-500" label="Home" isBig={true} />
+            <MobileNavButton id="home" icon={Home} activeColor="text-emerald-600" label="Home" isBig={true} />
             <MobileNavButton id="batch" icon={CalendarDays} activeColor="text-purple-500" label="Batch" />
-            <MobileNavButton id="parametri" icon={Settings} activeColor="text-slate-800" label="Param" />
-          </div>
-        </div>
+            <MobileNavButton id="parametri" icon={Settings} activeColor="text-slate-800" label="Impostazioni" />
+        </nav>
       )}
     </div>
   );

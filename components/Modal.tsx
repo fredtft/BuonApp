@@ -36,8 +36,7 @@ const Modal: React.FC<{
 
   const handleTouchStart = (e: React.TouchEvent) => {
     const scrollContainer = e.currentTarget.querySelector('.modal-scroll-content');
-    if (scrollContainer && scrollContainer.scrollTop > 0) return;
-
+    if (scrollContainer && scrollContainer.scrollTop > 5) return;
     touchStartY.current = e.targetTouches[0].clientY;
     isDragging.current = true;
   };
@@ -55,23 +54,18 @@ const Modal: React.FC<{
   const handleTouchEnd = () => {
     if (!isDragging.current) return;
     isDragging.current = false;
-    
-    if (translateY > 100) {
-      triggerCloseAnimation();
-    } else {
-      setTranslateY(0);
-    }
+    if (translateY > 120) triggerCloseAnimation();
+    else setTranslateY(0);
     touchStartY.current = null;
   };
 
   const triggerCloseAnimation = () => {
     setIsAnimatingOut(true);
     setTranslateY(window.innerHeight);
-    
     setTimeout(() => {
       onClose();
       setIsAnimatingOut(false);
-    }, 200);
+    }, 250);
   };
 
   const backdropOpacity = Math.max(0, 1 - translateY / (window.innerHeight * 0.7));
@@ -80,42 +74,39 @@ const Modal: React.FC<{
     <div 
       className="fixed inset-0 z-[1000] flex items-end sm:items-center justify-center p-0 sm:p-6 animate-fade-in"
       style={{ 
-        backgroundColor: `rgba(15, 23, 42, ${0.6 * backdropOpacity})`,
+        backgroundColor: `rgba(15, 23, 42, ${0.5 * backdropOpacity})`,
         backdropFilter: `blur(${4 * backdropOpacity}px)`,
         pointerEvents: isAnimatingOut ? 'none' : 'auto'
       }}
     >
       <div 
-        className="bg-white w-full h-[90dvh] sm:h-auto sm:max-h-[85dvh] sm:max-w-xl rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden"
+        className="bg-white w-full h-[92dvh] sm:h-auto sm:max-h-[85dvh] sm:max-w-xl rounded-t-[2.5rem] sm:rounded-[2.5rem] shadow-2xl flex flex-col overflow-hidden safe-p-bottom"
         style={{ 
           transform: `translateY(${translateY}px)`,
-          transition: isDragging.current ? 'none' : 'transform 0.2s cubic-bezier(0.32, 0, 0.67, 0)'
+          transition: isDragging.current ? 'none' : 'transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)'
         }}
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
       >
-        {/* Handle for mobile swipe */}
-        <div className="sm:hidden w-12 h-1 bg-slate-200 rounded-full mx-auto mt-4 mb-2 shrink-0" />
+        <div className="sm:hidden w-10 h-1.5 bg-slate-100 rounded-full mx-auto mt-3 mb-1 shrink-0" />
         
-        {/* Modal Header */}
-        <div className="px-6 py-4 border-b border-slate-50 flex justify-between items-center bg-white/95 backdrop-blur shrink-0 z-10">
+        <div className="px-6 py-4 border-b border-slate-50 flex justify-between items-center bg-white shrink-0 z-10">
           <h2 className="text-lg font-black text-slate-800 truncate pr-4">{title}</h2>
           <div className="flex items-center gap-2">
             {onEdit && (
-              <button onClick={onEdit} className="p-2.5 bg-emerald-50 text-emerald-600 rounded-full active:scale-90 transition-all hover:bg-emerald-100">
+              <button onClick={onEdit} className="p-2.5 bg-emerald-50 text-emerald-600 rounded-full active:scale-90 transition-all">
                 <Pencil size={18} />
               </button>
             )}
-            <button onClick={triggerCloseAnimation} className="p-2.5 bg-slate-50 text-slate-400 rounded-full active:scale-90 transition-all hover:bg-slate-100">
+            <button onClick={triggerCloseAnimation} className="p-2.5 bg-slate-50 text-slate-400 rounded-full active:scale-90 transition-all">
               <X size={20} />
             </button>
           </div>
         </div>
 
-        {/* Modal Scrollable Content */}
-        <div className="flex-1 overflow-y-auto custom-scrollbar modal-scroll-content">
-          <div className="p-6">
+        <div className="flex-1 overflow-y-auto custom-scrollbar modal-scroll-content pb-10 px-6">
+          <div className="py-4">
             {children}
           </div>
         </div>
