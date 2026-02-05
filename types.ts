@@ -42,6 +42,8 @@ export interface AppState {
   inventory: string[]; // List of ingredient IDs in stock
   recipes: Recipe[];
   ingredients: Ingredient[];
+  favoriteIngredients: string[]; // New: IDs of favorite ingredients
+  favoriteRecipes: string[]; // New: IDs of favorite recipes
   userPreferences: {
     dietMatrix: DietMatrix;
     batchStrategy: 'Eco' | 'Variety';
