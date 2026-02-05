@@ -93,10 +93,8 @@ export const HomeTab: React.FC<{
                <h2 className="text-lg font-black text-slate-800">Suggeriti per te</h2>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => setOnlyFavorites(!onlyFavorites)} className={`p-2.5 rounded-2xl transition-all shadow-sm ${onlyFavorites ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-slate-50 text-slate-300'}`}>
-              <Heart size={18} fill={onlyFavorites ? "currentColor" : "none"} />
-            </button>
+          <div className="text-[10px] font-black text-slate-300 uppercase tracking-widest bg-slate-50 px-3 py-1.5 rounded-full border border-slate-100">
+             {candidates.length} Piatti
           </div>
         </div>
         
@@ -124,6 +122,18 @@ export const HomeTab: React.FC<{
             
             {isFiltersOpen && (
               <div className="px-4 pb-5 bg-slate-50/50 animate-fade-in border-t border-slate-50 pt-4">
+                <div className="grid grid-cols-1 gap-2 mb-4">
+                  <button 
+                    onClick={() => setOnlyFavorites(!onlyFavorites)}
+                    className={`flex items-center justify-center gap-2 py-3.5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all border ${
+                      onlyFavorites ? 'bg-red-50 text-red-600 border-red-200 shadow-sm' : 'bg-white text-slate-400 border-slate-100'
+                    }`}
+                  >
+                    <Heart size={14} fill={onlyFavorites ? "currentColor" : "none"} />
+                    {onlyFavorites ? 'Solo Preferiti Attivo' : 'Filtra per Preferiti'}
+                  </button>
+                </div>
+
                 <div className="bg-slate-200/50 p-2.5 rounded-xl mb-4 text-[9px] font-bold text-slate-400 leading-relaxed uppercase tracking-tighter text-center">
                   Ciclo: <span className="text-emerald-600 font-black">Autorizzato</span> → <span className="text-slate-900 font-black">Obbligatorio</span> → <span className="text-red-500 font-black">Vietato</span>
                 </div>
