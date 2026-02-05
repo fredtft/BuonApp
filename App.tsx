@@ -173,7 +173,7 @@ export default function App() {
       list = list.filter(r => !r.tags.some(tag => indicatorKeys.includes(tag) && !activeRecipeTags.includes(tag)));
     }
     if (activeTab === 'home' && homeFilterMode === 'frigo') {
-      list = list.filter(r => r.ingredients.every(iId => state.inventory.includes(id => state.inventory.includes(id))));
+      list = list.filter(r => r.ingredients.every(iId => state.inventory.includes(iId)));
     }
     return list;
   }, [state.recipes, state.inventory, searchQuery, activeTab, homeFilterMode, activeRecipeTab, activeRecipeTags]);
@@ -446,7 +446,7 @@ export default function App() {
         </div>
         <div className="flex overflow-x-auto gap-1 no-scrollbar justify-center">
            {['Tutti', 'Primi', 'Secondi', 'Veg', 'Street'].map(cat => (
-             <button key={cat} onClick={() => setActiveRecipeTab(cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat as any)} className={`whitespace-nowrap px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${activeRecipeTab === (cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat) ? 'bg-emerald-500 border-emerald-500 text-white shadow-md' : 'bg-white border-slate-100 text-slate-400'}`}>{cat}</button>
+             <button key={cat} onClick={() => setActiveRecipeTab(cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat as any)} className={`whitespace-nowrap px-3 py-1.5 rounded-xl text-[9px] font-black uppercase tracking-widest border transition-all ${activeRecipeTab === (cat === 'Veg' ? 'Veg & Green' : cat === 'Street' ? 'Street Food' : cat) ? 'bg-emerald-50 border-emerald-500 text-white shadow-md' : 'bg-white border-slate-100 text-slate-400'}`}>{cat}</button>
            ))}
         </div>
         {renderLegend({ clickable: true, activeTags: activeRecipeTags, onToggle: (tag) => setActiveRecipeTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]) })}
