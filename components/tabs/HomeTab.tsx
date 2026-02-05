@@ -80,23 +80,34 @@ export const HomeTab: React.FC<{
   };
 
   return (
-    <div className="relative h-full flex flex-col safe-p-top">
-      <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-4 pb-48 max-w-6xl mx-auto w-full md:px-8">
-        <header className="px-6 pt-4 pb-2 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-emerald-500 rounded-lg lg:hidden flex items-center justify-center text-white">
-              <ChefHat size={18} />
+    <div className="relative h-full flex flex-col">
+      <header className="p-4 bg-white/95 backdrop-blur-md shadow-sm flex flex-col gap-3 rounded-b-[2rem] sticky top-0 z-20 lg:safe-p-top">
+        <div className="flex justify-between items-center">
+          <div className="flex items-center gap-2.5">
+            <div className="w-9 h-9 bg-emerald-500 rounded-xl flex lg:hidden items-center justify-center text-white shadow-lg shadow-emerald-200">
+              <ChefHat size={20} />
             </div>
-            <h1 className="lg:hidden text-xl font-black text-slate-800 tracking-tight">BuonApp</h1>
+            <h1 className="lg:hidden text-lg font-black text-slate-800 tracking-tight">BuonApp</h1>
+            <div className="hidden lg:flex items-center gap-2.5">
+               <Sparkles className="text-emerald-500" size={20} />
+               <h2 className="text-lg font-black text-slate-800">Suggeriti per te</h2>
+            </div>
           </div>
-          
-          <div className="flex items-center bg-slate-200/50 p-1 rounded-2xl md:w-80 shadow-inner">
-            <button onClick={() => setHomeFilterMode('frigo')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all ${homeFilterMode === 'frigo' ? 'bg-white text-emerald-600 shadow-md' : 'text-slate-500'}`}><Refrigerator size={14} /> Frigo</button>
-            <button onClick={() => setHomeFilterMode('spesa')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-xs font-bold transition-all ${homeFilterMode === 'spesa' ? 'bg-white text-orange-500 shadow-md' : 'text-slate-500'}`}><ShoppingBasket size={14} /> Spesa</button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => setOnlyFavorites(!onlyFavorites)} className={`p-2.5 rounded-2xl transition-all shadow-sm ${onlyFavorites ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-slate-50 text-slate-300'}`}>
+              <Heart size={18} fill={onlyFavorites ? "currentColor" : "none"} />
+            </button>
           </div>
-        </header>
+        </div>
+        
+        <div className="flex items-center bg-slate-100 p-1 rounded-2xl w-full shadow-inner">
+          <button onClick={() => setHomeFilterMode('frigo')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${homeFilterMode === 'frigo' ? 'bg-white text-emerald-600 shadow-sm' : 'text-slate-500'}`}><Refrigerator size={14} /> Frigo</button>
+          <button onClick={() => setHomeFilterMode('spesa')} className={`flex-1 flex items-center justify-center gap-2 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all ${homeFilterMode === 'spesa' ? 'bg-white text-orange-500 shadow-sm' : 'text-slate-500'}`}><ShoppingBasket size={14} /> Spesa</button>
+        </div>
+      </header>
 
-        <div className="px-4 space-y-4">
+      <div className="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-4 pb-48 max-w-6xl mx-auto w-full md:px-8">
+        <div className="px-4 pt-4 space-y-4">
           <div className="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden">
             <div className="flex items-center justify-between px-5 py-4">
               <button onClick={() => setIsFiltersOpen(!isFiltersOpen)} className="flex items-center gap-3 active:scale-95 transition-all">
@@ -108,9 +119,6 @@ export const HomeTab: React.FC<{
                   <span className="text-xs font-black text-slate-800">Personalizza suggerimenti</span>
                 </div>
                 {isFiltersOpen ? <ChevronUp size={14} className="text-slate-400" /> : <ChevronDown size={14} className="text-slate-400" />}
-              </button>
-              <button onClick={() => setOnlyFavorites(!onlyFavorites)} className={`p-2.5 rounded-2xl transition-all shadow-sm ${onlyFavorites ? 'bg-red-50 text-red-500 border border-red-100' : 'bg-slate-50 text-slate-300'}`}>
-                <Heart size={18} fill={onlyFavorites ? "currentColor" : "none"} />
               </button>
             </div>
             
