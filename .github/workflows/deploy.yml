@@ -44,7 +44,7 @@ jobs:
           source: "dist/*"
           
           # Vers ton dossier serveur
-          target: "/home/nmfs/www/_nmfs/BuonApp/v05/"
+          target: "/home/nmfs/www/_nmfs/BuonApp/"
           
           # IMPORTANT : On retire le préfixe 'dist' pour mettre les fichiers à la racine de v05
           strip_components: 1
